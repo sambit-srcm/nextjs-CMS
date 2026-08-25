@@ -1,4 +1,4 @@
-import { getPosts } from "@/lib/contentful/queries";
+import { getPosts } from "@/lib/cms/queries";
 
 // The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
 // does not apply. Revalidation has to be declared at the segment level.

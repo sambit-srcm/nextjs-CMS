@@ -8,7 +8,7 @@ import type {
   BlogPostFields,
   ContactPageCopy,
   ContactPageFields,
-  ContentfulImage,
+  CmsImage,
   Service,
   ServiceFields,
   SiteSettings,
@@ -30,7 +30,7 @@ function resolveImage(
   link: AssetLink | undefined,
   assets: RawAsset[] | undefined,
   fallbackAlt: string,
-): ContentfulImage | null {
+): CmsImage | null {
   if (!link?.sys?.id || !assets) return null;
 
   const asset = assets.find((candidate) => candidate.sys.id === link.sys.id);

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { ContactPageCopy } from "@/lib/contentful/types";
+import type { ContactPageCopy } from "@/lib/cms/types";
 
 type Status = "idle" | "submitting" | "success" | "error";
 

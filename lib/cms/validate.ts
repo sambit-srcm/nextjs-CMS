@@ -25,8 +25,3 @@ export function requiredString(
 export function optionalString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
-
-/** Reads an optional number, falling back to null. */
-export function optionalNumber(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}

@@ -55,7 +55,7 @@ the queries read the first.
 
 ## Architecture notes
 
-**Content fetching** lives in `lib/contentful/`. Pages call typed functions such
+**Content fetching** lives in `lib/cms/`. Pages call typed functions such
 as `getServices()` and receive flat shapes, never raw Contentful entries. That
 mapping boundary keeps the CMS an implementation detail rather than something
 every page is coupled to.
