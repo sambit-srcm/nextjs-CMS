@@ -30,6 +30,7 @@ with `NEXT_PUBLIC_`, so they stay server-side and never reach the browser.
 | `CONTENTFUL_SPACE_ID` | yes | Space to read from |
 | `CONTENTFUL_DELIVERY_TOKEN` | yes | Content Delivery API token (read-only) |
 | `CONTENTFUL_ENVIRONMENT` | no | Defaults to `master` |
+| `CONTENTFUL_REVALIDATE_SECRET` | no | Shared secret for the publish webhook below |
 
 Find these under **Settings → API keys** in Contentful.
 
@@ -64,8 +65,28 @@ server-side and returns an empty result; pages render an explanatory empty state
 instead of a 500. Entries missing a required field are skipped with a warning
 naming the entry and field.
 
-**Revalidation is declared per route segment** (`export const revalidate = 60`),
-so published changes appear within a minute without a redeploy.
+**Revalidation** happens two ways. Each route declares
+`export const revalidate = 60`, so published changes appear within a minute on
+their own. For anything faster, point a Contentful webhook at
+`/api/revalidate`.
+
+### Publish webhook
+
+In Contentful, go to **Settings → Webhooks** and add one pointing at
+`https://your-domain/api/revalidate`:
+
+- **Events** — Entry publish and unpublish
+- **Header** — `x-contentful-webhook-secret`, set to the same value as
+  `CONTENTFUL_REVALIDATE_SECRET`
+
+The route reads the content type from the payload and purges that cache tag,
+which refreshes every page reading that type. Stale content keeps being served
+while the fresh copy generates in the background, so a publish never leaves a
+visitor waiting on a cold render.
+
+Requests without a matching secret header are rejected with a 401. If the
+secret is unset the route refuses outright rather than revalidating on
+unauthenticated requests.
 
 ## Scripts
 
