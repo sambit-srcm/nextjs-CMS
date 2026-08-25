@@ -50,6 +50,18 @@ export type TeamMemberSkeleton = EntrySkeletonType<
   "teamMember"
 >;
 
+export type ContactPageSkeleton = EntrySkeletonType<
+  {
+    heading: EntryFieldTypes.Symbol;
+    intro: EntryFieldTypes.Text;
+    submitLabel: EntryFieldTypes.Symbol;
+    submittingLabel: EntryFieldTypes.Symbol;
+    successMessage: EntryFieldTypes.Text;
+    errorMessage: EntryFieldTypes.Text;
+  },
+  "contactPage"
+>;
+
 /* ---------- Flat shapes the UI actually consumes ---------- */
 
 export type ContentfulImage = {
@@ -83,6 +95,15 @@ export type Service = {
   description: string;
   price: string;
   image: ContentfulImage | null;
+};
+
+export type ContactPageCopy = {
+  heading: string;
+  intro: string;
+  submitLabel: string;
+  submittingLabel: string;
+  successMessage: string;
+  errorMessage: string;
 };
 
 export type TeamMember = {

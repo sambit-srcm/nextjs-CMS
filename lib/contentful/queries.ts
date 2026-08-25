@@ -7,6 +7,8 @@ import { withFallback } from "./errors";
 import type {
   BlogPost,
   BlogPostSkeleton,
+  ContactPageCopy,
+  ContactPageSkeleton,
   ContentfulImage,
   Service,
   ServiceSkeleton,
@@ -147,4 +149,33 @@ export async function getTeam(): Promise<TeamMember[]> {
       ];
     });
   }, []);
+}
+
+export async function getContactPage(): Promise<ContactPageCopy | null> {
+  return withFallback("getContactPage", async () => {
+    const { items } =
+      await client.withoutUnresolvableLinks.getEntries<ContactPageSkeleton>({
+        content_type: "contactPage",
+        limit: 1,
+      });
+
+    const entry = items[0];
+    if (!entry) {
+      console.warn("No contactPage entry published in Contentful.");
+      return null;
+    }
+
+    const f = entry.fields;
+    const heading = requiredString(f.heading, "heading", entry.sys.id);
+    if (!heading) return null;
+
+    return {
+      heading,
+      intro: optionalString(f.intro),
+      submitLabel: optionalString(f.submitLabel),
+      submittingLabel: optionalString(f.submittingLabel),
+      successMessage: optionalString(f.successMessage),
+      errorMessage: optionalString(f.errorMessage),
+    };
+  }, null);
 }
