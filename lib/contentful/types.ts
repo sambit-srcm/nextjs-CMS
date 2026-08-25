@@ -1,66 +1,55 @@
-import type { Document } from "@contentful/rich-text-types";
-import type { EntryFieldTypes, EntrySkeletonType } from "contentful";
+/* ---------- Raw field shapes, as the REST API returns them ---------- */
 
-/* ---------- Contentful entry skeletons (shape of the raw API response) ---------- */
+import type { AssetLink } from "./client";
 
-export type SiteSettingsSkeleton = EntrySkeletonType<
-  {
-    bannerTitle: EntryFieldTypes.Symbol;
-    bannerSubtitle: EntryFieldTypes.Text;
-    missionTitle: EntryFieldTypes.Symbol;
-    missionBody: EntryFieldTypes.Text;
-    visionTitle: EntryFieldTypes.Symbol;
-    visionBody: EntryFieldTypes.Text;
-  },
-  "siteSettings"
->;
+export type SiteSettingsFields = {
+  bannerTitle: string;
+  bannerSubtitle: string;
+  missionTitle: string;
+  missionBody: string;
+  visionTitle: string;
+  visionBody: string;
+};
 
-export type BlogPostSkeleton = EntrySkeletonType<
-  {
-    title: EntryFieldTypes.Symbol;
-    slug: EntryFieldTypes.Symbol;
-    author: EntryFieldTypes.Symbol;
-    date: EntryFieldTypes.Date;
-    excerpt: EntryFieldTypes.Text;
-    coverImage: EntryFieldTypes.AssetLink;
-    body: EntryFieldTypes.RichText;
-  },
-  "blogPost"
->;
+export type BlogPostFields = {
+  title: string;
+  slug: string;
+  author: string;
+  date: string;
+  excerpt: string;
+  coverImage: AssetLink;
+  /**
+   * Contentful RichText. Left as `unknown` deliberately: no route renders it
+   * yet, so there is nothing to type it against. Whoever builds the article
+   * page should add the renderer and type it properly then.
+   */
+  body: unknown;
+};
 
-export type ServiceSkeleton = EntrySkeletonType<
-  {
-    title: EntryFieldTypes.Symbol;
-    description: EntryFieldTypes.Text;
-    price: EntryFieldTypes.Symbol;
-    image: EntryFieldTypes.AssetLink;
-    order: EntryFieldTypes.Integer;
-  },
-  "service"
->;
+export type ServiceFields = {
+  title: string;
+  description: string;
+  price: string;
+  image: AssetLink;
+  order: number;
+};
 
-export type TeamMemberSkeleton = EntrySkeletonType<
-  {
-    name: EntryFieldTypes.Symbol;
-    designation: EntryFieldTypes.Symbol;
-    bio: EntryFieldTypes.Text;
-    photo: EntryFieldTypes.AssetLink;
-    order: EntryFieldTypes.Integer;
-  },
-  "teamMember"
->;
+export type TeamMemberFields = {
+  name: string;
+  designation: string;
+  bio: string;
+  photo: AssetLink;
+  order: number;
+};
 
-export type ContactPageSkeleton = EntrySkeletonType<
-  {
-    heading: EntryFieldTypes.Symbol;
-    intro: EntryFieldTypes.Text;
-    submitLabel: EntryFieldTypes.Symbol;
-    submittingLabel: EntryFieldTypes.Symbol;
-    successMessage: EntryFieldTypes.Text;
-    errorMessage: EntryFieldTypes.Text;
-  },
-  "contactPage"
->;
+export type ContactPageFields = {
+  heading: string;
+  intro: string;
+  submitLabel: string;
+  submittingLabel: string;
+  successMessage: string;
+  errorMessage: string;
+};
 
 /* ---------- Flat shapes the UI actually consumes ---------- */
 
@@ -87,7 +76,7 @@ export type BlogPost = {
   date: string;
   excerpt: string;
   coverImage: ContentfulImage | null;
-  body: Document | null;
+  body: unknown;
 };
 
 export type Service = {
@@ -97,6 +86,13 @@ export type Service = {
   image: ContentfulImage | null;
 };
 
+export type TeamMember = {
+  name: string;
+  designation: string;
+  bio: string;
+  photo: ContentfulImage | null;
+};
+
 export type ContactPageCopy = {
   heading: string;
   intro: string;
@@ -104,11 +100,4 @@ export type ContactPageCopy = {
   submittingLabel: string;
   successMessage: string;
   errorMessage: string;
-};
-
-export type TeamMember = {
-  name: string;
-  designation: string;
-  bio: string;
-  photo: ContentfulImage | null;
 };
