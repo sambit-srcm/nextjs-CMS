@@ -65,6 +65,13 @@ server-side and returns an empty result; pages render an explanatory empty state
 instead of a 500. Entries missing a required field are skipped with a warning
 naming the entry and field.
 
+**Loading and error states** use the App Router's file conventions.
+`app/loading.tsx` is the streaming fallback, `app/error.tsx` the route-level
+error boundary, and `app/not-found.tsx` replaces the unstyled 404. Because
+queries already degrade to empty results rather than throwing, the error
+boundary catches genuine faults such as a misconfigured environment, not
+routine CMS unavailability.
+
 **Revalidation** happens two ways. Each route declares
 `export const revalidate = 60`, so published changes appear within a minute on
 their own. For anything faster, point a Contentful webhook at
