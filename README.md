@@ -103,3 +103,55 @@ unauthenticated requests.
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
+
+## Deployment
+
+Vercel auto-detects Next.js and needs no build configuration from us. The
+committed `vercel.json` only pins the framework and the schema URL for editor
+autocomplete; everything else is default.
+
+### First deploy
+
+1. In the Vercel dashboard, **Add New → Project**, and import
+   `sambit-srcm/nextjs-CMS`.
+2. Under **Environment Variables**, set each of these for **Production**
+   (and Preview if you want branch deploys against the same space):
+
+   | Variable | Value |
+   | --- | --- |
+   | `CONTENTFUL_SPACE_ID` | from Contentful → Settings → API keys |
+   | `CONTENTFUL_ENVIRONMENT` | `master` |
+   | `CONTENTFUL_DELIVERY_TOKEN` | Content Delivery API token |
+   | `CONTENTFUL_REVALIDATE_SECRET` | generate a fresh secret — see below |
+
+3. Deploy. The first build should succeed unchanged; Vercel picks up the
+   Next.js preset, installs, builds, and serves.
+
+### After the first deploy
+
+Once the deploy has a public URL, wire the publish webhook so editors see their
+changes immediately instead of waiting out the 60s revalidate window.
+
+1. Generate a secret locally and set it as `CONTENTFUL_REVALIDATE_SECRET` in
+   Vercel (redeploy so the new value takes effect):
+
+   ```bash
+   openssl rand -hex 32
+   ```
+
+2. In Contentful → **Settings → Webhooks**, add a webhook:
+   - **URL** — `https://<your-vercel-domain>/api/revalidate`
+   - **Triggers** — Entry, publish and unpublish
+   - **Headers** — `x-contentful-webhook-secret`, value = the secret above
+
+3. Publish or unpublish any entry and confirm the change appears within a
+   second or two on the deployed site.
+
+### Preview deploys
+
+Every branch pushed to GitHub gets its own preview URL. If you point Vercel's
+Preview environment at the same Contentful space as Production, previews read
+the same content and the webhook affects both. Point them at a separate
+Contentful environment if you want isolated staging content — the
+`CONTENTFUL_ENVIRONMENT` variable exists exactly for this.
+
