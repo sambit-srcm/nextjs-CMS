@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { getPosts } from "@/lib/cms/queries";
 
 // The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
@@ -25,10 +27,15 @@ export default async function Blog() {
             {posts.map((post) => (
               <article
                 key={post.slug}
-                className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+                className="relative rounded-lg border border-zinc-200 bg-white p-6 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
               >
                 <h2 className="text-lg font-medium text-zinc-950 dark:text-zinc-50">
-                  {post.title}
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="after:absolute after:inset-0 hover:underline"
+                  >
+                    {post.title}
+                  </Link>
                 </h2>
                 <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
                   {post.author} &middot;{" "}
