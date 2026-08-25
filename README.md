@@ -31,6 +31,7 @@ with `NEXT_PUBLIC_`, so they stay server-side and never reach the browser.
 | `CONTENTFUL_DELIVERY_TOKEN` | yes | Content Delivery API token (read-only) |
 | `CONTENTFUL_ENVIRONMENT` | no | Defaults to `master` |
 | `CONTENTFUL_REVALIDATE_SECRET` | no | Shared secret for the publish webhook below |
+| `CONTENTFUL_MANAGEMENT_TOKEN` | no | Write token, used only by the contact form endpoint |
 
 Find these under **Settings → API keys** in Contentful.
 
@@ -48,6 +49,7 @@ Managed in Contentful. The site reads these types:
 | `teamMember` | Team section on About |
 | `blogPost` | Blog page and the teaser on the homepage |
 | `contactPage` | Editable copy on Contact |
+| `contactSubmission` | Messages sent through the contact form |
 
 `siteSettings` and `contactPage` are singletons **by convention** — Contentful
 has no built-in singleton concept, so exactly one entry of each is expected and
@@ -64,6 +66,18 @@ every page is coupled to.
 server-side and returns an empty result; pages render an explanatory empty state
 instead of a 500. Entries missing a required field are skipped with a warning
 naming the entry and field.
+
+**Contact submissions** are recorded as `contactSubmission` entries and can be
+read in Contentful alongside the site content. They are created **unpublished**
+on purpose: enquiries are not site content, and leaving them as drafts keeps
+them out of the Delivery API entirely, so a submission cannot surface publicly
+through a stray query.
+
+This is the only part of the site that writes to Contentful, and the only thing
+that needs `CONTENTFUL_MANAGEMENT_TOKEN`. The token is read lazily rather than
+at startup, so a deployment without it still builds and serves every page — only
+the contact form fails, and it fails with a generic message while the reason
+goes to the server log.
 
 **Loading and error states** use the App Router's file conventions.
 `app/loading.tsx` is the streaming fallback, `app/error.tsx` the route-level

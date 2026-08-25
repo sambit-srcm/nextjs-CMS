@@ -1,5 +1,7 @@
 /* ---------- Raw field shapes, as the REST API returns them ---------- */
 
+import type { Document } from "@contentful/rich-text-types";
+
 import type { AssetLink } from "./client";
 
 export type SiteSettingsFields = {
@@ -18,12 +20,7 @@ export type BlogPostFields = {
   date: string;
   excerpt: string;
   coverImage: AssetLink;
-  /**
-   * Contentful RichText. Left as `unknown` deliberately: no route renders it
-   * yet, so there is nothing to type it against. Whoever builds the article
-   * page should add the renderer and type it properly then.
-   */
-  body: unknown;
+  body: Document;
 };
 
 export type ServiceFields = {
@@ -76,7 +73,7 @@ export type BlogPost = {
   date: string;
   excerpt: string;
   coverImage: CmsImage | null;
-  body: unknown;
+  body: Document | null;
 };
 
 export type Service = {
