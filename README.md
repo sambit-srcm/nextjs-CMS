@@ -79,6 +79,16 @@ at startup, so a deployment without it still builds and serves every page — on
 the contact form fails, and it fails with a generic message while the reason
 goes to the server log.
 
+**Input validation** lives in `lib/validation/`, defined as Zod schemas. The
+schema is the single source of truth: the request type is inferred from it, and
+it carries no `server-only` import so the same definition can validate on the
+client without a second copy that can drift.
+
+**Tests** run on Vitest (`npm test`). They cover the validation schema, the
+contact route handler, and the CMS query layer — including the paths that are
+awkward to exercise by hand, such as a failed CMS write degrading correctly and
+error responses not leaking the upstream reason.
+
 **Loading and error states** use the App Router's file conventions.
 `app/loading.tsx` is the streaming fallback, `app/error.tsx` the route-level
 error boundary, and `app/not-found.tsx` replaces the unstyled 404. Because
@@ -117,6 +127,8 @@ unauthenticated requests.
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
+| `npm test` | Run the test suite once |
+| `npm run test:watch` | Run tests in watch mode |
 
 ## Deployment
 
