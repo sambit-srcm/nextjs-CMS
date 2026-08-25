@@ -43,3 +43,6 @@ next-env.d.ts
 # editors
 .vscode/
 .idea/
+
+# keep the environment template tracked
+!.env.example
