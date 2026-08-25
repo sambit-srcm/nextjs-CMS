@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Remo",
-  description: "Company website built with Next.js and Strapi.",
+  description: "Company website built with Next.js and Contentful.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
