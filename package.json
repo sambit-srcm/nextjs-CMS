@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "contentful:migrate": "contentful-migration --space-id $CONTENTFUL_SPACE_ID --environment-id ${CONTENTFUL_ENVIRONMENT:-master} --access-token $CONTENTFUL_MANAGEMENT_TOKEN",
-    "contentful:seed": "node contentful/seed/seed.cjs"
+    "lint": "eslint"
   },
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^16.2.2",
@@ -24,7 +22,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "contentful-migration": "^5.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "tailwindcss": "^4",

@@ -30,18 +30,15 @@ with `NEXT_PUBLIC_`, so they stay server-side and never reach the browser.
 | `CONTENTFUL_SPACE_ID` | yes | Space to read from |
 | `CONTENTFUL_DELIVERY_TOKEN` | yes | Content Delivery API token (read-only) |
 | `CONTENTFUL_ENVIRONMENT` | no | Defaults to `master` |
-| `CONTENTFUL_MANAGEMENT_TOKEN` | no | Only for the migration and seed scripts below |
 
-Find the first three under **Settings → API keys** in Contentful. The
-management token is on the **Content management tokens** tab of the same page.
+Find these under **Settings → API keys** in Contentful.
 
 A missing required variable throws at startup and names the variable, rather
 than surfacing later as an authentication failure from the API.
 
 ## Content model
 
-Defined as code in `contentful/migrations/` so model changes are reviewable and
-can be replayed against a fresh environment.
+Managed in Contentful. The site reads these types:
 
 | Type | Backs |
 | --- | --- |
@@ -54,19 +51,6 @@ can be replayed against a fresh environment.
 `siteSettings` and `contactPage` are singletons **by convention** — Contentful
 has no built-in singleton concept, so exactly one entry of each is expected and
 the queries read the first.
-
-### Setting up a new environment
-
-```bash
-npm run contentful:migrate   # create the content types
-npm run contentful:seed      # populate them with the initial content
-```
-
-Both need `CONTENTFUL_MANAGEMENT_TOKEN`. The seed is idempotent — entries use
-fixed IDs and are upserted, so re-running updates in place rather than
-duplicating. Note that it re-applies the *initial* content, so running it
-against a space with live edits will overwrite them. Treat it as bootstrap for
-a new environment, not a routine command.
 
 ## Architecture notes
 
@@ -91,5 +75,3 @@ so published changes appear within a minute without a redeploy.
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
-| `npm run contentful:migrate` | Apply content model migrations |
-| `npm run contentful:seed` | Seed or refresh initial content |
