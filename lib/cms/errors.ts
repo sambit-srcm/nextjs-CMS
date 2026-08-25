@@ -3,7 +3,7 @@
  * credentials, unknown content type. Carries the originating error as `cause`
  * so the underlying failure is not lost.
  */
-class CmsError extends Error {
+export class CmsError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
     this.name = "CmsError";
