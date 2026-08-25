@@ -7,6 +7,8 @@ import { withFallback } from "./errors";
 import type {
   BlogPost,
   BlogPostSkeleton,
+  ContactPageCopy,
+  ContactPageSkeleton,
   ContentfulImage,
   Service,
   ServiceSkeleton,
@@ -147,4 +149,61 @@ export async function getTeam(): Promise<TeamMember[]> {
       ];
     });
   }, []);
+}
+
+export async function getContactPage(): Promise<ContactPageCopy | null> {
+  return withFallback("getContactPage", async () => {
+    const { items } =
+      await client.withoutUnresolvableLinks.getEntries<ContactPageSkeleton>({
+        content_type: "contactPage",
+        limit: 1,
+      });
+
+    const entry = items[0];
+    if (!entry) {
+      console.warn("No contactPage entry published in Contentful.");
+      return null;
+    }
+
+    // Every field except `intro` is required in the content model, so an
+    // entry missing any of them cannot render a usable form. Treat that as
+    // no copy at all rather than emitting blank labels.
+    const f = entry.fields;
+    const heading = requiredString(f.heading, "heading", entry.sys.id);
+    const submitLabel = requiredString(f.submitLabel, "submitLabel", entry.sys.id);
+    const submittingLabel = requiredString(
+      f.submittingLabel,
+      "submittingLabel",
+      entry.sys.id,
+    );
+    const successMessage = requiredString(
+      f.successMessage,
+      "successMessage",
+      entry.sys.id,
+    );
+    const errorMessage = requiredString(
+      f.errorMessage,
+      "errorMessage",
+      entry.sys.id,
+    );
+
+    if (
+      !heading ||
+      !submitLabel ||
+      !submittingLabel ||
+      !successMessage ||
+      !errorMessage
+    ) {
+      return null;
+    }
+
+    return {
+      heading,
+      intro: optionalString(f.intro),
+      submitLabel,
+      submittingLabel,
+      successMessage,
+      errorMessage,
+    };
+  }, null);
 }
