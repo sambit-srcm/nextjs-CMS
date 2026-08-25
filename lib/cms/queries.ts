@@ -209,3 +209,31 @@ export async function getContactPage(): Promise<ContactPageCopy | null> {
     };
   }, null);
 }
+
+export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  return withFallback(`getPostBySlug(${slug})`, async () => {
+    // Filtering server-side rather than fetching every post and finding one
+    // keeps the request proportional to what is rendered.
+    const data = await fetchEntries<BlogPostFields>("blogPost", {
+      "fields.slug": slug,
+      limit: 1,
+    });
+
+    const entry = data.items[0];
+    if (!entry) return null;
+
+    const f = entry.fields;
+    const title = requiredString(f.title, "title", entry.sys.id);
+    if (!title) return null;
+
+    return {
+      title,
+      slug,
+      author: optionalString(f.author),
+      date: optionalString(f.date),
+      excerpt: optionalString(f.excerpt),
+      coverImage: resolveImage(f.coverImage, assets(data), title),
+      body: f.body ?? null,
+    };
+  }, null);
+}
