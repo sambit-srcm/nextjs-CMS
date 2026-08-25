@@ -1,4 +1,4 @@
-import { getContactPage } from "@/lib/contentful/queries";
+import { getContactPage } from "@/lib/cms/queries";
 
 import { ContactForm } from "./contact-form";
 

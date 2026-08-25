@@ -53,7 +53,7 @@ export type ContactPageFields = {
 
 /* ---------- Flat shapes the UI actually consumes ---------- */
 
-export type ContentfulImage = {
+export type CmsImage = {
   url: string;
   alt: string;
   width?: number;
@@ -75,7 +75,7 @@ export type BlogPost = {
   author: string;
   date: string;
   excerpt: string;
-  coverImage: ContentfulImage | null;
+  coverImage: CmsImage | null;
   body: unknown;
 };
 
@@ -83,14 +83,14 @@ export type Service = {
   title: string;
   description: string;
   price: string;
-  image: ContentfulImage | null;
+  image: CmsImage | null;
 };
 
 export type TeamMember = {
   name: string;
   designation: string;
   bio: string;
-  photo: ContentfulImage | null;
+  photo: CmsImage | null;
 };
 
 export type ContactPageCopy = {
