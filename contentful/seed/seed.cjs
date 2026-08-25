@@ -123,6 +123,54 @@ const team = [
   },
 ];
 
+const posts = [
+  {
+    id: "post-scaled-to-1m-users",
+    title: "How we scaled our platform to 1M users",
+    slug: "how-we-scaled-our-platform-to-1m-users",
+    author: "Jane Cooper",
+    date: "2026-07-12",
+    excerpt:
+      "A look back at the architecture decisions that helped us grow without a rewrite.",
+  },
+  {
+    id: "post-designing-for-accessibility",
+    title: "Designing for accessibility from day one",
+    slug: "designing-for-accessibility-from-day-one",
+    author: "Alex Rivera",
+    date: "2026-06-28",
+    excerpt:
+      "Why accessibility can't be an afterthought, and how we bake it into our process.",
+  },
+  {
+    id: "post-remote-team-culture",
+    title: "Our approach to remote team culture",
+    slug: "our-approach-to-remote-team-culture",
+    author: "Sam Okafor",
+    date: "2026-06-03",
+    excerpt:
+      "The rituals and tools that keep a distributed team aligned and productive.",
+  },
+  {
+    id: "post-guide-to-isr",
+    title: "A practical guide to incremental static regeneration",
+    slug: "a-practical-guide-to-incremental-static-regeneration",
+    author: "Jane Cooper",
+    date: "2026-05-19",
+    excerpt:
+      "When ISR beats full SSG or SSR, and how we use it for content that changes often.",
+  },
+  {
+    id: "post-migrating-to-headless-cms",
+    title: "What we learned migrating to a headless CMS",
+    slug: "what-we-learned-migrating-to-a-headless-cms",
+    author: "Alex Rivera",
+    date: "2026-04-30",
+    excerpt:
+      "The tradeoffs of moving content out of code and into a CMS your whole team can edit.",
+  },
+];
+
 async function main() {
   console.log(`Seeding space ${SPACE} (${ENV})`);
 
@@ -134,6 +182,11 @@ async function main() {
   console.log("team members:");
   for (const { id, ...fields } of team) {
     await upsert("teamMember", id, fields);
+  }
+
+  console.log("blog posts:");
+  for (const { id, ...fields } of posts) {
+    await upsert("blogPost", id, fields);
   }
 
   console.log("site settings:");
