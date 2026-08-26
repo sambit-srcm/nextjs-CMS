@@ -35,7 +35,7 @@ export function SiteHeader({
         <Link
           href="/"
           onClick={() => setOpen(false)}
-          className="flex items-baseline gap-2.5"
+          className="flex items-center gap-2.5"
         >
           {logo && (
             <Image
@@ -49,11 +49,19 @@ export function SiteHeader({
               priority
             />
           )}
-          <span className="text-lg font-semibold tracking-tight text-ink">
-            {siteName}
-          </span>
-          <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
-            {siteTagline}
+          {/*
+            The wordmark and tagline share a baseline with each other; the logo
+            is centred against the pair. Baseline alignment cannot include the
+            image: a replaced element's baseline is its bottom edge, so the
+            mark hung off the text baseline instead of sitting level with it.
+          */}
+          <span className="flex items-baseline gap-2.5">
+            <span className="text-lg font-semibold tracking-tight text-ink">
+              {siteName}
+            </span>
+            <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
+              {siteTagline}
+            </span>
           </span>
         </Link>
 
