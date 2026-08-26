@@ -28,6 +28,7 @@ export async function generateMetadata({
       0,
       200,
     ),
+    alternates: { canonical: `/team/${id}` },
     openGraph: {
       title: member.name,
       description: member.designation,
@@ -74,7 +75,8 @@ export default async function Writer({ params }: PageProps<"/team/[id]">) {
           {member.photo ? (
             <Image
               src={member.photo.url}
-              alt={member.photo.alt}
+              // Decorative: the name is the <h1> beside it.
+              alt=""
               width={96}
               height={96}
               className="h-24 w-24 rounded-full object-cover"

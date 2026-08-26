@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 
 import { getPageContent, getServices } from "@/lib/cms/queries";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/services" },
+};
 
 export default async function Topics() {
   const [copy, topics] = await Promise.all([
@@ -44,7 +49,8 @@ export default async function Topics() {
                   <div className="relative h-36 w-full">
                     <Image
                       src={topic.image.url}
-                      alt={topic.image.alt}
+                      // Decorative: the service title follows it.
+                      alt=""
                       fill
                       sizes="(min-width: 640px) 33vw, 100vw"
                       className="object-cover"

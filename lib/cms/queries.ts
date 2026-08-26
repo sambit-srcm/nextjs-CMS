@@ -31,7 +31,6 @@ import { optionalString, requiredString } from "./validate";
 function resolveImage(
   link: AssetLink | undefined,
   assets: RawAsset[] | undefined,
-  fallbackAlt: string,
 ): CmsImage | null {
   if (!link?.sys?.id || !assets) return null;
 
@@ -44,7 +43,11 @@ function resolveImage(
   return {
     // Asset URLs come back protocol-relative (`//images.ctfassets.net/…`).
     url: file.url.startsWith("//") ? `https:${file.url}` : file.url,
-    alt: asset?.fields?.description || asset?.fields?.title || fallbackAlt,
+    // Only the editor-written description. Contentful's asset title is a
+    // filename more often than a sentence, and falling back to the entry's
+    // own name guarantees alt text that repeats the heading beside it —
+    // both are worse for a screen reader than no alt text at all.
+    alt: asset?.fields?.description || "",
     width: dimensions?.width,
     height: dimensions?.height,
   };
@@ -115,7 +118,7 @@ export async function getPosts(limit?: number): Promise<BlogPost[]> {
             author: optionalString(f.author),
             date: optionalString(f.date),
             excerpt: optionalString(f.excerpt),
-            coverImage: resolveImage(f.coverImage, assets(data), title),
+            coverImage: resolveImage(f.coverImage, assets(data)),
             body: f.body ?? null,
           },
         ];
@@ -149,7 +152,7 @@ export async function getServices(limit?: number): Promise<Service[]> {
             title,
             description,
             price: optionalString(f.price),
-            image: resolveImage(f.image, assets(data), title),
+            image: resolveImage(f.image, assets(data)),
           },
         ];
       });
@@ -182,7 +185,7 @@ export async function getTeam(): Promise<TeamMember[]> {
             name,
             designation,
             bio: optionalString(f.bio),
-            photo: resolveImage(f.photo, assets(data), name),
+            photo: resolveImage(f.photo, assets(data)),
           },
         ];
       });
@@ -278,7 +281,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
         author: optionalString(f.author),
         date: optionalString(f.date),
         excerpt: optionalString(f.excerpt),
-        coverImage: resolveImage(f.coverImage, assets(data), title),
+        coverImage: resolveImage(f.coverImage, assets(data)),
         body: f.body ?? null,
       };
     },
@@ -314,7 +317,7 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
         name,
         designation,
         bio: optionalString(f.bio),
-        photo: resolveImage(f.photo, assets(data), name),
+        photo: resolveImage(f.photo, assets(data)),
       };
     },
     null,

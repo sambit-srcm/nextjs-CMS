@@ -30,6 +30,7 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -129,7 +130,8 @@ export default async function Article({ params }: PageProps<"/blog/[slug]">) {
         {post.coverImage && (
           <Image
             src={post.coverImage.url}
-            alt={post.coverImage.alt}
+            // Decorative: it illustrates the headline above it.
+            alt=""
             width={post.coverImage.width ?? 1200}
             height={post.coverImage.height ?? 630}
             className="mt-10 w-full rounded-xl object-cover"
