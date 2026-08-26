@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { formatDate } from "@/components/format";
+import { formatDate, initials } from "@/components/format";
 import { getPosts, getTeam, getTeamMember } from "@/lib/cms/queries";
 
 export const revalidate = 60;
@@ -36,13 +36,6 @@ export async function generateMetadata({
       images: member.photo ? [{ url: member.photo.url }] : undefined,
     },
   };
-}
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("");
 }
 
 export default async function Writer({ params }: PageProps<"/team/[id]">) {

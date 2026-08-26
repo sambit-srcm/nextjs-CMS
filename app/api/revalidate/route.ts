@@ -1,4 +1,28 @@
+import { createHash, timingSafeEqual } from "node:crypto";
+
 import { revalidateTag } from "next/cache";
+
+/**
+ * Constant-time comparison of the webhook secret.
+ *
+ * `!==` on strings short-circuits at the first differing byte, so response
+ * timing reveals how much of a guess was correct and the secret can be
+ * recovered one byte at a time. Both sides are hashed first so the comparison
+ * runs over two fixed-length digests — timingSafeEqual requires equal lengths,
+ * and comparing raw values would leak the secret's length.
+ *
+ * @param provided the header value from the request, or null when absent
+ * @param expected the configured secret
+ * @returns true only when the two are identical
+ */
+function secretMatches(provided: string | null, expected: string): boolean {
+  if (provided === null) return false;
+
+  const a = createHash("sha256").update(provided).digest();
+  const b = createHash("sha256").update(expected).digest();
+
+  return timingSafeEqual(a, b);
+}
 
 /**
  * Purges cached content when an entry is published or unpublished in
@@ -23,7 +47,9 @@ export async function POST(request: Request) {
 
   // Compared against a header rather than a query parameter so the secret does
   // not end up in access logs.
-  if (request.headers.get("x-contentful-webhook-secret") !== secret) {
+  if (
+    !secretMatches(request.headers.get("x-contentful-webhook-secret"), secret)
+  ) {
     return Response.json({ error: "Unauthorized." }, { status: 401 });
   }
 

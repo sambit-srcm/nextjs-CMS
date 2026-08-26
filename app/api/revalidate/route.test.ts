@@ -83,3 +83,30 @@ describe("POST /api/revalidate", () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe("secret comparison", () => {
+  // A prefix match is what a timing attack builds on: if a near-miss took
+  // measurably longer to reject than a wrong first byte, the secret could be
+  // recovered one byte at a time. Each of these must be rejected as flatly as
+  // a completely wrong value.
+  it("rejects a secret that is a prefix of the real one", async () => {
+    const res = await POST(post(publishEvent, SECRET.slice(0, -1)));
+
+    expect(res.status).toBe(401);
+    expect(revalidateTag).not.toHaveBeenCalled();
+  });
+
+  it("rejects a secret that has the real one as its prefix", async () => {
+    const res = await POST(post(publishEvent, `${SECRET}-extra`));
+
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects a same-length secret differing in the last byte", async () => {
+    const nearMiss = `${SECRET.slice(0, -1)}X`;
+    const res = await POST(post(publishEvent, nearMiss));
+
+    expect(nearMiss).toHaveLength(SECRET.length);
+    expect(res.status).toBe(401);
+  });
+});

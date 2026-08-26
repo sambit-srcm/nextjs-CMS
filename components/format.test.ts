@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatDate } from "./format";
+import { formatDate, initials } from "./format";
 
 describe("formatDate", () => {
   it("formats an ISO date in long British form", () => {
@@ -13,5 +13,19 @@ describe("formatDate", () => {
 
   it("returns null for an empty string rather than Invalid Date", () => {
     expect(formatDate("")).toBeNull();
+  });
+});
+
+describe("initials", () => {
+  it("takes the first letter of each word", () => {
+    expect(initials("Marcus Feld")).toBe("MF");
+  });
+
+  it("handles a single name", () => {
+    expect(initials("Priya")).toBe("P");
+  });
+
+  it("handles three or more words", () => {
+    expect(initials("Ana Maria Silva Costa")).toBe("AMSC");
   });
 });

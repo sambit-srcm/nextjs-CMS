@@ -15,6 +15,7 @@ export type PageContentFields = {
 };
 
 export type SiteSettingsFields = {
+  logo: AssetLink;
   siteName: string;
   siteTagline: string;
   footerTagline: string;
@@ -84,6 +85,8 @@ export type PageContent = {
 };
 
 export type SiteSettings = {
+  /** Brand mark shown in the header. Null until an editor uploads one. */
+  logo: CmsImage | null;
   siteName: string;
   siteTagline: string;
   footerTagline: string;

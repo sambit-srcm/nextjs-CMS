@@ -37,11 +37,15 @@ export function ContactForm({
         }),
       });
 
-      if (!res.ok) throw new Error("Request failed");
+      if (!res.ok) throw new Error(`Contact request failed: ${res.status}`);
 
       setStatus("success");
       form.reset();
-    } catch {
+    } catch (error) {
+      // The visitor sees the CMS-authored error message; the reason goes to
+      // the console so a failure is diagnosable rather than silent. Swallowing
+      // it entirely left a broken form looking identical to a rejected one.
+      console.error("Contact form submission failed:", error);
       setStatus("error");
     }
   }

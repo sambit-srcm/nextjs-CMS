@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 
+import { PageMasthead } from "@/components/page-masthead";
 import { getPageContent, getServices } from "@/lib/cms/queries";
 
 export const revalidate = 60;
@@ -17,21 +18,7 @@ export default async function Topics() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="mx-auto w-full max-w-5xl px-6 pt-20 pb-6 sm:pt-28">
-        {copy?.eyebrow && (
-          <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-            {copy.eyebrow}
-          </p>
-        )}
-        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          {copy?.heading}
-        </h1>
-        {copy?.intro && (
-          <p className="mt-5 max-w-xl text-lg leading-8 text-ink-muted">
-            {copy.intro}
-          </p>
-        )}
-      </section>
+      <PageMasthead copy={copy} maxWidth="max-w-5xl" />
 
       <section className="mx-auto w-full max-w-5xl px-6 py-8">
         {topics.length === 0 ? (

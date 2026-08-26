@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { initials } from "@/components/format";
+import { PageMasthead } from "@/components/page-masthead";
 import { getPageContent, getSiteSettings, getTeam } from "@/lib/cms/queries";
 
 export const revalidate = 60;
@@ -9,13 +11,6 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("");
-}
 
 export default async function About() {
   const [copy, settings, team] = await Promise.all([
@@ -33,16 +28,7 @@ export default async function About() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="mx-auto w-full max-w-4xl px-6 pt-20 pb-6 sm:pt-28">
-        {copy?.eyebrow && (
-          <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-            {copy.eyebrow}
-          </p>
-        )}
-        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          {copy?.heading}
-        </h1>
-      </section>
+      <PageMasthead copy={copy} />
 
       {statements.length > 0 && (
         <section className="mx-auto w-full max-w-4xl px-6 py-8">
