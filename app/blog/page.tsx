@@ -1,7 +1,6 @@
-import Link from "next/link";
-
-import { formatDate } from "@/components/format";
 import { getPosts } from "@/lib/cms/queries";
+
+import { ArticleList } from "./article-list";
 
 export const revalidate = 60;
 
@@ -29,33 +28,9 @@ export default async function Blog() {
             No articles have been published yet. Please check back shortly.
           </p>
         ) : (
-          <ul className="divide-y divide-line border-t border-line">
-            {posts.map((post) => (
-              <li key={post.slug}>
-                <article className="group relative py-9">
-                  <p className="text-xs text-ink-muted">
-                    {formatDate(post.date)}
-                    {post.author && post.date && " · "}
-                    {post.author}
-                  </p>
-                  <h2 className="mt-2.5 text-xl leading-snug font-medium tracking-tight text-ink transition-colors group-hover:text-accent-strong sm:text-2xl">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="after:absolute after:inset-0"
-                    >
-                      {post.title}
-                    </Link>
-                  </h2>
-                  <p className="mt-3.5 max-w-2xl text-base leading-7 text-ink-muted">
-                    {post.excerpt}
-                  </p>
-                  <p className="mt-4 text-sm font-medium text-accent">
-                    Read article &rarr;
-                  </p>
-                </article>
-              </li>
-            ))}
-          </ul>
+          /* The list is fetched on the server and filtered on the client, so
+             the page still prerenders with every article in the markup. */
+          <ArticleList posts={posts} />
         )}
       </section>
     </div>
