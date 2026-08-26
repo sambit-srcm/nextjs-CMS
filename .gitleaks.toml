@@ -1,0 +1,19 @@
+# Gitleaks configuration.
+#
+# Extends the bundled ruleset rather than replacing it, so new detectors ship
+# with the tool instead of needing to be added here.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Paths that legitimately contain secret-shaped strings"
+paths = [
+  # Placeholder values, not credentials.
+  '''\.env\.example$''',
+  # Test fixtures use obviously fake tokens.
+  '''.*\.test\.tsx?$''',
+  '''^test/.*''',
+  # Lockfile integrity hashes trip entropy checks.
+  '''package-lock\.json$''',
+]

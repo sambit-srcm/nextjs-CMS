@@ -55,222 +55,270 @@ function assets<T>(collection: EntryCollection<T>): RawAsset[] | undefined {
 }
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
-  return withFallback("getSiteSettings", async () => {
-    const data = await fetchEntries<SiteSettingsFields>("siteSettings", {
-      limit: 1,
-    });
+  return withFallback(
+    "getSiteSettings",
+    async () => {
+      const data = await fetchEntries<SiteSettingsFields>("siteSettings", {
+        limit: 1,
+      });
 
-    const entry = data.items[0];
-    if (!entry) {
-      console.warn("No siteSettings entry published in Contentful.");
-      return null;
-    }
+      const entry = data.items[0];
+      if (!entry) {
+        console.warn("No siteSettings entry published in Contentful.");
+        return null;
+      }
 
-    const f = entry.fields;
-    const bannerTitle = requiredString(f.bannerTitle, "bannerTitle", entry.sys.id);
-    if (!bannerTitle) return null;
+      const f = entry.fields;
+      const bannerTitle = requiredString(
+        f.bannerTitle,
+        "bannerTitle",
+        entry.sys.id,
+      );
+      if (!bannerTitle) return null;
 
-    return {
-      siteName: optionalString(f.siteName),
-      siteTagline: optionalString(f.siteTagline),
-      footerTagline: optionalString(f.footerTagline),
-      metaDescription: optionalString(f.metaDescription),
-      bannerTitle,
-      bannerSubtitle: optionalString(f.bannerSubtitle),
-      missionTitle: optionalString(f.missionTitle),
-      missionBody: optionalString(f.missionBody),
-      visionTitle: optionalString(f.visionTitle),
-      visionBody: optionalString(f.visionBody),
-    };
-  }, null);
+      return {
+        siteName: optionalString(f.siteName),
+        siteTagline: optionalString(f.siteTagline),
+        footerTagline: optionalString(f.footerTagline),
+        metaDescription: optionalString(f.metaDescription),
+        bannerTitle,
+        bannerSubtitle: optionalString(f.bannerSubtitle),
+        missionTitle: optionalString(f.missionTitle),
+        missionBody: optionalString(f.missionBody),
+        visionTitle: optionalString(f.visionTitle),
+        visionBody: optionalString(f.visionBody),
+      };
+    },
+    null,
+  );
 }
 
 export async function getPosts(limit?: number): Promise<BlogPost[]> {
-  return withFallback("getPosts", async () => {
-    const data = await fetchEntries<BlogPostFields>("blogPost", {
-      order: "-fields.date",
-      limit,
-    });
+  return withFallback(
+    "getPosts",
+    async () => {
+      const data = await fetchEntries<BlogPostFields>("blogPost", {
+        order: "-fields.date",
+        limit,
+      });
 
-    return data.items.flatMap((entry) => {
-      const f = entry.fields;
-      const title = requiredString(f.title, "title", entry.sys.id);
-      const slug = requiredString(f.slug, "slug", entry.sys.id);
-      if (!title || !slug) return [];
+      return data.items.flatMap((entry) => {
+        const f = entry.fields;
+        const title = requiredString(f.title, "title", entry.sys.id);
+        const slug = requiredString(f.slug, "slug", entry.sys.id);
+        if (!title || !slug) return [];
 
-      return [
-        {
-          title,
-          slug,
-          author: optionalString(f.author),
-          date: optionalString(f.date),
-          excerpt: optionalString(f.excerpt),
-          coverImage: resolveImage(f.coverImage, assets(data), title),
-          body: f.body ?? null,
-        },
-      ];
-    });
-  }, []);
+        return [
+          {
+            title,
+            slug,
+            author: optionalString(f.author),
+            date: optionalString(f.date),
+            excerpt: optionalString(f.excerpt),
+            coverImage: resolveImage(f.coverImage, assets(data), title),
+            body: f.body ?? null,
+          },
+        ];
+      });
+    },
+    [],
+  );
 }
 
 export async function getServices(limit?: number): Promise<Service[]> {
-  return withFallback("getServices", async () => {
-    const data = await fetchEntries<ServiceFields>("service", {
-      order: "fields.order",
-      ...(limit ? { limit } : {}),
-    });
+  return withFallback(
+    "getServices",
+    async () => {
+      const data = await fetchEntries<ServiceFields>("service", {
+        order: "fields.order",
+        ...(limit ? { limit } : {}),
+      });
 
-    return data.items.flatMap((entry) => {
-      const f = entry.fields;
-      const title = requiredString(f.title, "title", entry.sys.id);
-      const description = requiredString(f.description, "description", entry.sys.id);
-      if (!title || !description) return [];
+      return data.items.flatMap((entry) => {
+        const f = entry.fields;
+        const title = requiredString(f.title, "title", entry.sys.id);
+        const description = requiredString(
+          f.description,
+          "description",
+          entry.sys.id,
+        );
+        if (!title || !description) return [];
 
-      return [
-        {
-          title,
-          description,
-          price: optionalString(f.price),
-          image: resolveImage(f.image, assets(data), title),
-        },
-      ];
-    });
-  }, []);
+        return [
+          {
+            title,
+            description,
+            price: optionalString(f.price),
+            image: resolveImage(f.image, assets(data), title),
+          },
+        ];
+      });
+    },
+    [],
+  );
 }
 
 export async function getTeam(): Promise<TeamMember[]> {
-  return withFallback("getTeam", async () => {
-    const data = await fetchEntries<TeamMemberFields>("teamMember", {
-      order: "fields.order",
-    });
+  return withFallback(
+    "getTeam",
+    async () => {
+      const data = await fetchEntries<TeamMemberFields>("teamMember", {
+        order: "fields.order",
+      });
 
-    return data.items.flatMap((entry) => {
-      const f = entry.fields;
-      const name = requiredString(f.name, "name", entry.sys.id);
-      const designation = requiredString(f.designation, "designation", entry.sys.id);
-      if (!name || !designation) return [];
+      return data.items.flatMap((entry) => {
+        const f = entry.fields;
+        const name = requiredString(f.name, "name", entry.sys.id);
+        const designation = requiredString(
+          f.designation,
+          "designation",
+          entry.sys.id,
+        );
+        if (!name || !designation) return [];
 
-      return [
-        {
-          id: entry.sys.id,
-          name,
-          designation,
-          bio: optionalString(f.bio),
-          photo: resolveImage(f.photo, assets(data), name),
-        },
-      ];
-    });
-  }, []);
+        return [
+          {
+            id: entry.sys.id,
+            name,
+            designation,
+            bio: optionalString(f.bio),
+            photo: resolveImage(f.photo, assets(data), name),
+          },
+        ];
+      });
+    },
+    [],
+  );
 }
 
 export async function getContactPage(): Promise<ContactPageCopy | null> {
-  return withFallback("getContactPage", async () => {
-    const data = await fetchEntries<ContactPageFields>("contactPage", {
-      limit: 1,
-    });
+  return withFallback(
+    "getContactPage",
+    async () => {
+      const data = await fetchEntries<ContactPageFields>("contactPage", {
+        limit: 1,
+      });
 
-    const entry = data.items[0];
-    if (!entry) {
-      console.warn("No contactPage entry published in Contentful.");
-      return null;
-    }
+      const entry = data.items[0];
+      if (!entry) {
+        console.warn("No contactPage entry published in Contentful.");
+        return null;
+      }
 
-    // Every field except `intro` is required in the content model, so an entry
-    // missing any of them cannot render a usable form. Treat that as no copy at
-    // all rather than emitting blank labels.
-    const f = entry.fields;
-    const heading = requiredString(f.heading, "heading", entry.sys.id);
-    const submitLabel = requiredString(f.submitLabel, "submitLabel", entry.sys.id);
-    const submittingLabel = requiredString(
-      f.submittingLabel,
-      "submittingLabel",
-      entry.sys.id,
-    );
-    const successMessage = requiredString(
-      f.successMessage,
-      "successMessage",
-      entry.sys.id,
-    );
-    const errorMessage = requiredString(
-      f.errorMessage,
-      "errorMessage",
-      entry.sys.id,
-    );
+      // Every field except `intro` is required in the content model, so an entry
+      // missing any of them cannot render a usable form. Treat that as no copy at
+      // all rather than emitting blank labels.
+      const f = entry.fields;
+      const heading = requiredString(f.heading, "heading", entry.sys.id);
+      const submitLabel = requiredString(
+        f.submitLabel,
+        "submitLabel",
+        entry.sys.id,
+      );
+      const submittingLabel = requiredString(
+        f.submittingLabel,
+        "submittingLabel",
+        entry.sys.id,
+      );
+      const successMessage = requiredString(
+        f.successMessage,
+        "successMessage",
+        entry.sys.id,
+      );
+      const errorMessage = requiredString(
+        f.errorMessage,
+        "errorMessage",
+        entry.sys.id,
+      );
 
-    if (
-      !heading ||
-      !submitLabel ||
-      !submittingLabel ||
-      !successMessage ||
-      !errorMessage
-    ) {
-      return null;
-    }
+      if (
+        !heading ||
+        !submitLabel ||
+        !submittingLabel ||
+        !successMessage ||
+        !errorMessage
+      ) {
+        return null;
+      }
 
-    return {
-      heading,
-      intro: optionalString(f.intro),
-      submitLabel,
-      submittingLabel,
-      successMessage,
-      errorMessage,
-    };
-  }, null);
+      return {
+        heading,
+        intro: optionalString(f.intro),
+        submitLabel,
+        submittingLabel,
+        successMessage,
+        errorMessage,
+      };
+    },
+    null,
+  );
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  return withFallback(`getPostBySlug(${slug})`, async () => {
-    // Filtering server-side rather than fetching every post and finding one
-    // keeps the request proportional to what is rendered.
-    const data = await fetchEntries<BlogPostFields>("blogPost", {
-      "fields.slug": slug,
-      limit: 1,
-    });
+  return withFallback(
+    `getPostBySlug(${slug})`,
+    async () => {
+      // Filtering server-side rather than fetching every post and finding one
+      // keeps the request proportional to what is rendered.
+      const data = await fetchEntries<BlogPostFields>("blogPost", {
+        "fields.slug": slug,
+        limit: 1,
+      });
 
-    const entry = data.items[0];
-    if (!entry) return null;
+      const entry = data.items[0];
+      if (!entry) return null;
 
-    const f = entry.fields;
-    const title = requiredString(f.title, "title", entry.sys.id);
-    if (!title) return null;
+      const f = entry.fields;
+      const title = requiredString(f.title, "title", entry.sys.id);
+      if (!title) return null;
 
-    return {
-      title,
-      slug,
-      author: optionalString(f.author),
-      date: optionalString(f.date),
-      excerpt: optionalString(f.excerpt),
-      coverImage: resolveImage(f.coverImage, assets(data), title),
-      body: f.body ?? null,
-    };
-  }, null);
+      return {
+        title,
+        slug,
+        author: optionalString(f.author),
+        date: optionalString(f.date),
+        excerpt: optionalString(f.excerpt),
+        coverImage: resolveImage(f.coverImage, assets(data), title),
+        body: f.body ?? null,
+      };
+    },
+    null,
+  );
 }
 
 export async function getTeamMember(id: string): Promise<TeamMember | null> {
-  return withFallback(`getTeamMember(${id})`, async () => {
-    // Filtered server-side by entry id rather than fetching the whole team and
-    // finding one, so the request stays proportional to what is rendered.
-    const data = await fetchEntries<TeamMemberFields>("teamMember", {
-      "sys.id": id,
-      limit: 1,
-    });
+  return withFallback(
+    `getTeamMember(${id})`,
+    async () => {
+      // Filtered server-side by entry id rather than fetching the whole team and
+      // finding one, so the request stays proportional to what is rendered.
+      const data = await fetchEntries<TeamMemberFields>("teamMember", {
+        "sys.id": id,
+        limit: 1,
+      });
 
-    const entry = data.items[0];
-    if (!entry) return null;
+      const entry = data.items[0];
+      if (!entry) return null;
 
-    const f = entry.fields;
-    const name = requiredString(f.name, "name", entry.sys.id);
-    const designation = requiredString(f.designation, "designation", entry.sys.id);
-    if (!name || !designation) return null;
+      const f = entry.fields;
+      const name = requiredString(f.name, "name", entry.sys.id);
+      const designation = requiredString(
+        f.designation,
+        "designation",
+        entry.sys.id,
+      );
+      if (!name || !designation) return null;
 
-    return {
-      id: entry.sys.id,
-      name,
-      designation,
-      bio: optionalString(f.bio),
-      photo: resolveImage(f.photo, assets(data), name),
-    };
-  }, null);
+      return {
+        id: entry.sys.id,
+        name,
+        designation,
+        bio: optionalString(f.bio),
+        photo: resolveImage(f.photo, assets(data), name),
+      };
+    },
+    null,
+  );
 }
 
 /**
@@ -279,27 +327,31 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
  * back rather than render empty headings.
  */
 export async function getPageContent(id: string): Promise<PageContent | null> {
-  return withFallback(`getPageContent(${id})`, async () => {
-    const data = await fetchEntries<PageContentFields>("pageContent", {
-      "sys.id": id,
-      limit: 1,
-    });
+  return withFallback(
+    `getPageContent(${id})`,
+    async () => {
+      const data = await fetchEntries<PageContentFields>("pageContent", {
+        "sys.id": id,
+        limit: 1,
+      });
 
-    const entry = data.items[0];
-    if (!entry) {
-      console.warn(`No pageContent entry "${id}" published in Contentful.`);
-      return null;
-    }
+      const entry = data.items[0];
+      if (!entry) {
+        console.warn(`No pageContent entry "${id}" published in Contentful.`);
+        return null;
+      }
 
-    const f = entry.fields;
-    return {
-      eyebrow: optionalString(f.eyebrow),
-      heading: optionalString(f.heading),
-      intro: optionalString(f.intro),
-      primaryCtaLabel: optionalString(f.primaryCtaLabel),
-      secondaryCtaLabel: optionalString(f.secondaryCtaLabel),
-      sectionOneHeading: optionalString(f.sectionOneHeading),
-      sectionTwoHeading: optionalString(f.sectionTwoHeading),
-    };
-  }, null);
+      const f = entry.fields;
+      return {
+        eyebrow: optionalString(f.eyebrow),
+        heading: optionalString(f.heading),
+        intro: optionalString(f.intro),
+        primaryCtaLabel: optionalString(f.primaryCtaLabel),
+        secondaryCtaLabel: optionalString(f.secondaryCtaLabel),
+        sectionOneHeading: optionalString(f.sectionOneHeading),
+        sectionTwoHeading: optionalString(f.sectionTwoHeading),
+      };
+    },
+    null,
+  );
 }

@@ -15,8 +15,11 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-const { default: Writer, generateMetadata, generateStaticParams } =
-  await import("./page");
+const {
+  default: Writer,
+  generateMetadata,
+  generateStaticParams,
+} = await import("./page");
 
 // Matches the route props Next passes in: both are promises, and
 // `searchParams` is present even though these routes ignore it.

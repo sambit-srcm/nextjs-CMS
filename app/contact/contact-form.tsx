@@ -49,10 +49,7 @@ export function ContactForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label
-          htmlFor="name"
-          className="text-sm font-medium text-ink"
-        >
+        <label htmlFor="name" className="text-sm font-medium text-ink">
           Name
         </label>
         <input
@@ -65,10 +62,7 @@ export function ContactForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label
-          htmlFor="email"
-          className="text-sm font-medium text-ink"
-        >
+        <label htmlFor="email" className="text-sm font-medium text-ink">
           Email
         </label>
         <input
@@ -81,10 +75,7 @@ export function ContactForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label
-          htmlFor="message"
-          className="text-sm font-medium text-ink"
-        >
+        <label htmlFor="message" className="text-sm font-medium text-ink">
           Message
         </label>
         <textarea
@@ -105,9 +96,7 @@ export function ContactForm({
       </button>
 
       {status === "success" && (
-        <p className="text-sm text-accent-strong">
-          {successMessage}
-        </p>
+        <p className="text-sm text-accent-strong">{successMessage}</p>
       )}
       {status === "error" && (
         <p className="text-sm text-red-400">{errorMessage}</p>

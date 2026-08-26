@@ -45,9 +45,7 @@ export async function generateMetadata({
 const renderOptions: Options = {
   renderMark: {
     [MARKS.BOLD]: (text) => (
-      <strong className="font-medium text-ink">
-        {text}
-      </strong>
+      <strong className="font-medium text-ink">{text}</strong>
     ),
     [MARKS.CODE]: (text) => (
       <code className="rounded bg-accent-soft px-1.5 py-0.5 font-mono text-[0.9em] text-accent-strong">
@@ -67,9 +65,7 @@ const renderOptions: Options = {
       </h2>
     ),
     [BLOCKS.HEADING_3]: (_node, children) => (
-      <h3 className="mt-10 text-lg font-medium text-ink">
-        {children}
-      </h3>
+      <h3 className="mt-10 text-lg font-medium text-ink">{children}</h3>
     ),
     [BLOCKS.UL_LIST]: (_node, children) => (
       <ul className="mt-5 list-disc space-y-2 pl-6 text-[1.0625rem] leading-8 text-ink-muted marker:text-accent">

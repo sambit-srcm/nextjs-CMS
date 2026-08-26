@@ -16,10 +16,7 @@ import { filterPosts } from "@/lib/filter-posts";
 export function ArticleList({ posts }: { posts: BlogPost[] }) {
   const [query, setQuery] = useState("");
 
-  const visible = useMemo(
-    () => filterPosts(posts, query),
-    [posts, query],
-  );
+  const visible = useMemo(() => filterPosts(posts, query), [posts, query]);
 
   return (
     <>

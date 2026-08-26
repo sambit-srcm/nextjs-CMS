@@ -1,1 +1,13 @@
+# Every pull request requires review from the owners listed here.
+#
+# This file alone does not enforce anything. It takes effect once the target
+# branch has a protection rule with "Require review from Code Owners" enabled
+# — see the setup notes in README.md.
+
 * @sambit-srcm
+
+# Anything that governs how code reaches the default branch.
+/.github/         @sambit-srcm
+/.husky/          @sambit-srcm
+/commitlint.config.mjs  @sambit-srcm
+/.gitleaks.toml   @sambit-srcm

@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, development]
+  push:
+    branches: [main, development]
+
+# A new push to the same branch supersedes the run in flight.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, format, test and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Plain `npm ci` rather than skipping lifecycle scripts: several
+      # dependencies fetch native binaries in one, and skipping those breaks
+      # the build. The husky install it triggers is harmless on a runner.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Test with coverage thresholds
+        run: npm run test:coverage
+
+      # The CMS credentials are not secrets the build needs: every query
+      # degrades to an empty result when Contentful is unreachable, so the
+      # build exercises the real code path with placeholders and still fails
+      # on a genuine compile or prerender error.
+      - name: Build
+        run: npm run build
+        env:
+          CONTENTFUL_SPACE_ID: ci-placeholder
+          CONTENTFUL_DELIVERY_TOKEN: ci-placeholder
+          CONTENTFUL_ENVIRONMENT: master
+
+  commits:
+    name: Commit messages
+    runs-on: ubuntu-latest
+    # Nothing to validate on a push to a protected branch — those commits
+    # were already checked on the pull request that introduced them.
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # commitlint needs both ends of the range, which a shallow clone
+          # does not have.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate every commit on this pull request
+        run: >-
+          npx commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+          --verbose
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Gitleaks scans history, not just the tip, so a secret committed
+          # earlier in the branch is still caught.
+          fetch-depth: 0
+
+      - name: Scan for committed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
