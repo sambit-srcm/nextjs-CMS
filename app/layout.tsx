@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Remo",
-  description: "Company website built with Next.js and Contentful.",
+  title: "Circuit",
+  description:
+    "Phone reviews and launch coverage across Android and iOS, plus testing, consulting and content services.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
