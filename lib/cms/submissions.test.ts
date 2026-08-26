@@ -10,10 +10,20 @@ const submission = {
 };
 
 function ok(body: unknown) {
-  return { ok: true, status: 201, json: async () => body, text: async () => "" } as Response;
+  return {
+    ok: true,
+    status: 201,
+    json: async () => body,
+    text: async () => "",
+  } as Response;
 }
 function fail(status: number, body: string) {
-  return { ok: false, status, json: async () => ({}), text: async () => body } as Response;
+  return {
+    ok: false,
+    status,
+    json: async () => ({}),
+    text: async () => body,
+  } as Response;
 }
 
 beforeEach(() => {
@@ -27,8 +37,13 @@ afterEach(() => {
 
 describe("createContactSubmission", () => {
   it("returns the created entry id", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(ok({ sys: { id: "entry-1" } })));
-    await expect(createContactSubmission(submission)).resolves.toEqual({ id: "entry-1" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(ok({ sys: { id: "entry-1" } })),
+    );
+    await expect(createContactSubmission(submission)).resolves.toEqual({
+      id: "entry-1",
+    });
   });
 
   it("posts to the management API with the content type header", async () => {
@@ -86,7 +101,10 @@ describe("createContactSubmission", () => {
   });
 
   it("throws with the upstream status and body when Contentful rejects it", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(fail(422, "validation failed")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(fail(422, "validation failed")),
+    );
 
     const attempt = createContactSubmission(submission);
 

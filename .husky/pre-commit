@@ -1,0 +1,14 @@
+# Formatting and lint run over the whole repo rather than staged files only.
+# At this size that costs a few seconds and avoids a second dependency; if it
+# starts to drag, lint-staged is the usual next step.
+npm run format:check
+npm run lint
+
+# Secret scanning is advisory locally and enforced in CI, so a contributor
+# without the binary is warned rather than blocked. Install it with
+# `brew install gitleaks` to catch a leaked credential before it is committed.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --verbose
+else
+  echo "gitleaks not installed — skipping local secret scan (CI still enforces it)."
+fi

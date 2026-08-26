@@ -17,7 +17,9 @@ export function SiteFooter({
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-14 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-sm">
-          <p className="text-lg font-semibold tracking-tight text-ink">{siteName}</p>
+          <p className="text-lg font-semibold tracking-tight text-ink">
+            {siteName}
+          </p>
           <p className="mt-3 text-sm leading-6 text-ink-muted">
             {footerTagline}
           </p>

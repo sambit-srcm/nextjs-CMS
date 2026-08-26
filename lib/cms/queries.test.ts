@@ -46,7 +46,11 @@ describe("getServices", () => {
       vi.fn().mockResolvedValue(
         respond(
           collection([
-            service({ title: "Strategy", description: "Roadmaps.", price: "$1" }),
+            service({
+              title: "Strategy",
+              description: "Roadmaps.",
+              price: "$1",
+            }),
           ]),
         ),
       ),
@@ -60,14 +64,16 @@ describe("getServices", () => {
   it("skips entries missing a required field rather than rendering undefined", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        respond(
-          collection([
-            service({ title: "Good", description: "Present." }, "ok"),
-            service({ description: "No title." }, "bad"),
-          ]),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(
+            collection([
+              service({ title: "Good", description: "Present." }, "ok"),
+              service({ description: "No title." }, "bad"),
+            ]),
+          ),
         ),
-      ),
     );
 
     const services = await getServices();
@@ -123,7 +129,13 @@ describe("getServices", () => {
       vi.fn().mockResolvedValue(
         respond(
           collection(
-            [service({ title: "T", description: "d", image: { sys: { id: "a" } } })],
+            [
+              service({
+                title: "T",
+                description: "d",
+                image: { sys: { id: "a" } },
+              }),
+            ],
             {
               Asset: [
                 {
@@ -147,8 +159,18 @@ describe("getServices", () => {
       vi.fn().mockResolvedValue(
         respond(
           collection(
-            [service({ title: "Strategy", description: "d", image: { sys: { id: "a" } } })],
-            { Asset: [{ sys: { id: "a" }, fields: { file: { url: "//x/y.png" } } }] },
+            [
+              service({
+                title: "Strategy",
+                description: "d",
+                image: { sys: { id: "a" } },
+              }),
+            ],
+            {
+              Asset: [
+                { sys: { id: "a" }, fields: { file: { url: "//x/y.png" } } },
+              ],
+            },
           ),
         ),
       ),
@@ -164,7 +186,13 @@ describe("getServices", () => {
       vi.fn().mockResolvedValue(
         respond(
           collection(
-            [service({ title: "T", description: "d", image: { sys: { id: "a" } } })],
+            [
+              service({
+                title: "T",
+                description: "d",
+                image: { sys: { id: "a" } },
+              }),
+            ],
             { Asset: [{ sys: { id: "a" }, fields: {} }] },
           ),
         ),
@@ -196,12 +224,18 @@ describe("getServices", () => {
   });
 
   it("degrades to an empty list when the request fails", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("network down")),
+    );
     await expect(getServices()).resolves.toEqual([]);
   });
 
   it("degrades to an empty list on a non-ok response", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(respond({ message: "boom" }, false)));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(respond({ message: "boom" }, false)),
+    );
     await expect(getServices()).resolves.toEqual([]);
   });
 });
@@ -250,9 +284,15 @@ describe("getSiteSettings", () => {
   it("returns null when the banner title is missing", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        respond(collection([service({ bannerSubtitle: "No title." }, "site-settings")])),
-      ),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(
+            collection([
+              service({ bannerSubtitle: "No title." }, "site-settings"),
+            ]),
+          ),
+        ),
     );
     await expect(getSiteSettings()).resolves.toBeNull();
   });
@@ -263,7 +303,10 @@ describe("getSiteSettings", () => {
   });
 
   it("returns null when the request fails, so the page can omit the section", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("network down")),
+    );
     await expect(getSiteSettings()).resolves.toBeNull();
   });
 });
@@ -317,9 +360,11 @@ describe("getPosts", () => {
   it("skips a post with no slug, since nothing could link to it", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        respond(collection([service({ title: "No slug" }, "bad")])),
-      ),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(collection([service({ title: "No slug" }, "bad")])),
+        ),
     );
     await expect(getPosts()).resolves.toEqual([]);
   });
@@ -334,23 +379,35 @@ describe("getTeam", () => {
   it("exposes the entry id, which the detail route is keyed on", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        respond(
-          collection([
-            service({ name: "Ananya Prasad", designation: "Editor", bio: "Bio." }, "ananya-prasad"),
-          ]),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(
+            collection([
+              service(
+                { name: "Ananya Prasad", designation: "Editor", bio: "Bio." },
+                "ananya-prasad",
+              ),
+            ]),
+          ),
         ),
-      ),
     );
 
     const [member] = await getTeam();
-    expect(member).toMatchObject({ id: "ananya-prasad", name: "Ananya Prasad" });
+    expect(member).toMatchObject({
+      id: "ananya-prasad",
+      name: "Ananya Prasad",
+    });
   });
 
   it("skips a member missing a designation", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(respond(collection([service({ name: "Nameless" }, "x")]))),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(collection([service({ name: "Nameless" }, "x")])),
+        ),
     );
     await expect(getTeam()).resolves.toEqual([]);
   });
@@ -363,9 +420,13 @@ describe("getTeam", () => {
 
 describe("getPostBySlug", () => {
   it("filters server-side rather than fetching everything", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      respond(collection([service({ title: "T", slug: "s", excerpt: "e" }, "p1")])),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        respond(
+          collection([service({ title: "T", slug: "s", excerpt: "e" }, "p1")]),
+        ),
+      );
     vi.stubGlobal("fetch", fetchMock);
 
     await getPostBySlug("pixel-10-pro-review");
@@ -387,11 +448,18 @@ describe("getPostBySlug", () => {
 
 describe("getTeamMember", () => {
   it("looks the member up by entry id", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      respond(
-        collection([service({ name: "Marcus Feld", designation: "Reviewer", bio: "b" }, "marcus-feld")]),
-      ),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        respond(
+          collection([
+            service(
+              { name: "Marcus Feld", designation: "Reviewer", bio: "b" },
+              "marcus-feld",
+            ),
+          ]),
+        ),
+      );
     vi.stubGlobal("fetch", fetchMock);
 
     const member = await getTeamMember("marcus-feld");
@@ -407,7 +475,11 @@ describe("getTeamMember", () => {
   it("returns null when a required field is missing", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(respond(collection([service({ name: "Only a name" }, "x")]))),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(collection([service({ name: "Only a name" }, "x")])),
+        ),
     );
     await expect(getTeamMember("x")).resolves.toBeNull();
   });
@@ -425,19 +497,33 @@ describe("getContactPage", () => {
   it("returns the copy when every required field is present", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(respond(collection([service(complete, "contact-page")]))),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(collection([service(complete, "contact-page")])),
+        ),
     );
     await expect(getContactPage()).resolves.toMatchObject(complete);
   });
 
-  it.each(["heading", "submitLabel", "submittingLabel", "successMessage", "errorMessage"])(
+  it.each([
+    "heading",
+    "submitLabel",
+    "submittingLabel",
+    "successMessage",
+    "errorMessage",
+  ])(
     "returns null when %s is missing, rather than a blank label",
     async (field) => {
       const fields = { ...complete } as Record<string, string>;
       delete fields[field];
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue(respond(collection([service(fields, "contact-page")]))),
+        vi
+          .fn()
+          .mockResolvedValue(
+            respond(collection([service(fields, "contact-page")])),
+          ),
       );
       await expect(getContactPage()).resolves.toBeNull();
     },
@@ -451,22 +537,36 @@ describe("getContactPage", () => {
 
 describe("getPageContent", () => {
   it("returns masthead copy for the requested page id", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      respond(
-        collection([service({ eyebrow: "About", heading: "Who writes this" }, "page-about")]),
-      ),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        respond(
+          collection([
+            service(
+              { eyebrow: "About", heading: "Who writes this" },
+              "page-about",
+            ),
+          ]),
+        ),
+      );
     vi.stubGlobal("fetch", fetchMock);
 
     const copy = await getPageContent("page-about");
-    expect(copy).toMatchObject({ eyebrow: "About", heading: "Who writes this" });
+    expect(copy).toMatchObject({
+      eyebrow: "About",
+      heading: "Who writes this",
+    });
     expect(String(fetchMock.mock.calls[0][0])).toContain("sys.id=page-about");
   });
 
   it("fills absent optional fields with empty strings", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(respond(collection([service({ heading: "Only a heading" }, "p")]))),
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(collection([service({ heading: "Only a heading" }, "p")])),
+        ),
     );
 
     const copy = await getPageContent("p");

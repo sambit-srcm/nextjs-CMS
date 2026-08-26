@@ -108,7 +108,9 @@ export default async function Home() {
           <div className="mt-9 grid gap-x-8 gap-y-10 sm:grid-cols-2">
             {recent.map((post) => (
               <article key={post.slug} className="group relative">
-                <p className="text-xs text-ink-muted">{formatDate(post.date)}</p>
+                <p className="text-xs text-ink-muted">
+                  {formatDate(post.date)}
+                </p>
                 <h3 className="mt-2 text-lg leading-snug font-medium text-ink transition-colors group-hover:text-accent-strong">
                   <Link
                     href={`/blog/${post.slug}`}
@@ -147,7 +149,9 @@ export default async function Home() {
                 key={topic.title}
                 className="rounded-xl border border-line bg-surface p-6 transition-colors hover:border-accent"
               >
-                <h3 className="text-base font-medium text-ink">{topic.title}</h3>
+                <h3 className="text-base font-medium text-ink">
+                  {topic.title}
+                </h3>
                 <p className="mt-2 text-sm leading-6 text-ink-muted">
                   {topic.description}
                 </p>

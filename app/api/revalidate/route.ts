@@ -15,7 +15,9 @@ export async function POST(request: Request) {
   const secret = process.env.CONTENTFUL_REVALIDATE_SECRET;
 
   if (!secret) {
-    console.error("CONTENTFUL_REVALIDATE_SECRET is not set; refusing to revalidate.");
+    console.error(
+      "CONTENTFUL_REVALIDATE_SECRET is not set; refusing to revalidate.",
+    );
     return Response.json({ error: "Not configured." }, { status: 500 });
   }
 
