@@ -9,6 +9,8 @@ import type {
   ContactPageCopy,
   ContactPageFields,
   CmsImage,
+  PageContent,
+  PageContentFields,
   Service,
   ServiceFields,
   SiteSettings,
@@ -69,6 +71,10 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     if (!bannerTitle) return null;
 
     return {
+      siteName: optionalString(f.siteName),
+      siteTagline: optionalString(f.siteTagline),
+      footerTagline: optionalString(f.footerTagline),
+      metaDescription: optionalString(f.metaDescription),
       bannerTitle,
       bannerSubtitle: optionalString(f.bannerSubtitle),
       missionTitle: optionalString(f.missionTitle),
@@ -263,6 +269,37 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
       designation,
       bio: optionalString(f.bio),
       photo: resolveImage(f.photo, assets(data), name),
+    };
+  }, null);
+}
+
+/**
+ * Masthead copy for a single route, keyed by a readable entry id such as
+ * `page-blog`. Returns null when the entry is absent so the caller can fall
+ * back rather than render empty headings.
+ */
+export async function getPageContent(id: string): Promise<PageContent | null> {
+  return withFallback(`getPageContent(${id})`, async () => {
+    const data = await fetchEntries<PageContentFields>("pageContent", {
+      "sys.id": id,
+      limit: 1,
+    });
+
+    const entry = data.items[0];
+    if (!entry) {
+      console.warn(`No pageContent entry "${id}" published in Contentful.`);
+      return null;
+    }
+
+    const f = entry.fields;
+    return {
+      eyebrow: optionalString(f.eyebrow),
+      heading: optionalString(f.heading),
+      intro: optionalString(f.intro),
+      primaryCtaLabel: optionalString(f.primaryCtaLabel),
+      secondaryCtaLabel: optionalString(f.secondaryCtaLabel),
+      sectionOneHeading: optionalString(f.sectionOneHeading),
+      sectionTwoHeading: optionalString(f.sectionTwoHeading),
     };
   }, null);
 }

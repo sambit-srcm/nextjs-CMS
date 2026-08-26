@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { getSiteSettings } from "@/lib/cms/queries";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,13 +16,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Circuit",
-  description:
-    "Phone reviews and launch coverage across Android and iOS, plus testing, consulting and content services.",
+/**
+ * Brand strings used when the CMS is unreachable. The document must still have
+ * a title and the chrome must still render; falling back to empty strings
+ * would ship a nameless page.
+ */
+const FALLBACK = {
+  siteName: "Circuit",
+  siteTagline: "Phones & Tech",
+  footerTagline: "Independent phone reviews and launch coverage.",
+  metaDescription: "Phone reviews and launch coverage across Android and iOS.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+
+  return {
+    title: settings?.siteName || FALLBACK.siteName,
+    description: settings?.metaDescription || FALLBACK.metaDescription,
+  };
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const settings = await getSiteSettings();
   return (
     <html
       lang="en"
@@ -43,9 +60,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <SiteHeader />
+        <SiteHeader
+          siteName={settings?.siteName || FALLBACK.siteName}
+          siteTagline={settings?.siteTagline || FALLBACK.siteTagline}
+        />
         {children}
-        <SiteFooter />
+        <SiteFooter
+          siteName={settings?.siteName || FALLBACK.siteName}
+          footerTagline={settings?.footerTagline || FALLBACK.footerTagline}
+        />
       </body>
     </html>
   );

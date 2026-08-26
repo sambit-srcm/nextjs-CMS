@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { getSiteSettings, getTeam } from "@/lib/cms/queries";
+import { getPageContent, getSiteSettings, getTeam } from "@/lib/cms/queries";
 
 export const revalidate = 60;
 
@@ -13,7 +13,11 @@ function initials(name: string) {
 }
 
 export default async function About() {
-  const [settings, team] = await Promise.all([getSiteSettings(), getTeam()]);
+  const [copy, settings, team] = await Promise.all([
+    getPageContent("page-about"),
+    getSiteSettings(),
+    getTeam(),
+  ]);
 
   const statements = [
     { title: settings?.missionTitle, body: settings?.missionBody },
@@ -25,11 +29,13 @@ export default async function About() {
   return (
     <div className="flex flex-1 flex-col">
       <section className="mx-auto w-full max-w-4xl px-6 pt-20 pb-6 sm:pt-28">
-        <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-          About
-        </p>
+        {copy?.eyebrow && (
+          <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+            {copy.eyebrow}
+          </p>
+        )}
         <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          Who writes this
+          {copy?.heading}
         </h1>
       </section>
 
@@ -55,7 +61,7 @@ export default async function About() {
 
       <section className="mx-auto w-full max-w-4xl px-6 py-10">
         <h2 className="text-xl font-semibold tracking-tight text-ink">
-          Contributors
+          {copy?.sectionOneHeading}
         </h2>
         {team.length === 0 ? (
           <p className="mt-8 text-sm text-ink-muted">
