@@ -153,8 +153,24 @@ unauthenticated requests.
 | `npm run test:coverage` | Tests plus the 90% coverage thresholds                 |
 
 **Git hooks** are managed by Husky and installed by `npm install`. `pre-commit`
-runs the formatter check and ESLint; `commit-msg` runs commitlint. To bypass one
-in an emergency, `git commit --no-verify` — CI still enforces the same checks.
+runs the formatter check and ESLint; `commit-msg` runs commitlint; `pre-push`
+checks that the lock file still resolves against `package.json`. To bypass one
+in an emergency, `git commit --no-verify` (or `git push --no-verify`) — CI still
+enforces the same checks.
+
+**If `npm ci` fails with `EUSAGE ... Missing: @emnapi/... from lock file`**,
+regenerate the lock file rather than patching the missing entries in:
+
+```bash
+rm -rf node_modules package-lock.json && npm install
+```
+
+Several dependencies — sharp, and Tailwind's oxide binary — declare optional
+packages per platform. Installing on macOS records the native path and omits
+the WebAssembly fallback Linux needs, so the lock file works locally and fails
+on the CI runner. `npm install` is happy to work around the gap; `npm ci`
+treats it as the mismatch it is, which is the whole point of the stricter
+command. The `pre-push` hook catches it before it reaches CI.
 
 **Commit messages** follow Conventional Commits, with two house rules on top of
 `@commitlint/config-conventional`: a body and a footer are both required, and
