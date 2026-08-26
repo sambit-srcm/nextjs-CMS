@@ -9,8 +9,25 @@ const root = import.meta.dirname;
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["**/*.test.ts"],
+    include: ["**/*.test.ts", "**/*.test.tsx"],
     setupFiles: ["test/setup.ts"],
+    coverage: {
+      provider: "v8",
+      // Everything matching `include` is reported, tested or not, so an
+      // untested module shows as 0% rather than vanishing from the total.
+      include: ["lib/**", "app/**", "components/**"],
+      // Pages and components are in scope: excluding them would report a
+      // percentage over the data layer alone, which flatters the number.
+      // Only type declarations are dropped, since they compile away.
+      exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.d.ts", "**/types.ts"],
+      reporter: ["text", "html"],
+      thresholds: {
+        statements: 90,
+        branches: 90,
+        functions: 90,
+        lines: 90,
+      },
+    },
     exclude: ["node_modules/**", ".next/**"],
   },
   resolve: {

@@ -85,10 +85,21 @@ schema is the single source of truth: the request type is inferred from it, and
 it carries no `server-only` import so the same definition can validate on the
 client without a second copy that can drift.
 
-**Tests** run on Vitest (`npm test`). They cover the validation schema, the
-contact route handler, and the CMS query layer — including the paths that are
-awkward to exercise by hand, such as a failed CMS write degrading correctly and
-error responses not leaking the upstream reason.
+**Tests** run on Vitest (`npm test`; `npm run test:coverage` for the report).
+They cover the validation schema, both route handlers, the CMS query layer, and
+every page and component — including the paths that are awkward to exercise by
+hand, such as a failed CMS write degrading correctly, error responses not
+leaking the upstream reason, and each page's empty state when the CMS returns
+nothing.
+
+Pages are rendered with `react-dom/server`: a Server Component is an async
+function returning an element tree, so it can be awaited and rendered in plain
+Node with the query layer mocked. Client Components render their first frame
+the same way. Event handlers and effects do not run under that renderer, so the
+few behaviours that need a real DOM — submitting the contact form, opening the
+mobile menu, typing in the article filter — are left uncovered rather than
+faked. Coverage counts pages and components in its denominator; excluding them
+would report a percentage over the data layer alone.
 
 **Loading and error states** use the App Router's file conventions.
 `app/loading.tsx` is the streaming fallback, `app/error.tsx` the route-level
