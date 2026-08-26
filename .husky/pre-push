@@ -1,0 +1,14 @@
+# The lock file and package.json drift apart silently.
+#
+# Several dependencies (sharp, Tailwind's oxide binary) declare optional
+# packages per platform. Installing on macOS records the native path and omits
+# the WebAssembly fallback that Linux needs, so `npm install` leaves a lock
+# file that works here and fails on the CI runner with EUSAGE. It has happened
+# twice; both times the first sign was a red pipeline.
+#
+# `npm ci --dry-run` resolves the lock file against package.json without
+# installing anything, and takes well under a second. Fix by regenerating from
+# scratch, which records every platform's optional dependencies:
+#
+#   rm -rf node_modules package-lock.json && npm install
+npm ci --dry-run
