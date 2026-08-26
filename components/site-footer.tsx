@@ -11,10 +11,10 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-14 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-sm">
-          <p className="text-lg font-semibold tracking-tight text-ink">Remo</p>
+          <p className="text-lg font-semibold tracking-tight text-ink">Circuit</p>
           <p className="mt-3 text-sm leading-6 text-ink-muted">
-            An independent cycling journal. Long routes, loose surfaces, and the
-            kit that holds up.
+            Independent phone reviews and launch coverage. Devices tested as
+            daily drivers, not unboxed and filed.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export function SiteFooter() {
 
       <div className="border-t border-line">
         <p className="mx-auto w-full max-w-6xl px-6 py-6 text-xs text-ink-muted">
-          &copy; {new Date().getFullYear()} Remo. All rights reserved.
+          &copy; {new Date().getFullYear()} Circuit. All rights reserved.
         </p>
       </div>
     </footer>

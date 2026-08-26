@@ -5,13 +5,14 @@ import { getPosts, getServices, getSiteSettings } from "@/lib/cms/queries";
 
 export const revalidate = 60;
 
-/** One lead article plus a grid of recent ones. */
-const HOME_POST_COUNT = 4;
+/** The homepage teases three of each; the section pages list them all. */
+const HOME_POST_COUNT = 3;
+const HOME_SERVICE_COUNT = 3;
 
 export default async function Home() {
   const [settings, topics, posts] = await Promise.all([
     getSiteSettings(),
-    getServices(),
+    getServices(HOME_SERVICE_COUNT),
     getPosts(HOME_POST_COUNT),
   ]);
 
@@ -28,7 +29,7 @@ export default async function Home() {
           />
           <div className="relative mx-auto w-full max-w-6xl px-6 pt-20 pb-16 sm:pt-28">
             <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-              Independent cycling journal
+              Independent phone reviews
             </p>
             <h1 className="mt-5 max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-ink sm:text-6xl">
               {settings.bannerTitle}
@@ -41,13 +42,13 @@ export default async function Home() {
                 href="/blog"
                 className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong"
               >
-                Read the journal
+                Read the reviews
               </Link>
               <Link
                 href="/about"
                 className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-accent"
               >
-                How we test
+                How we review
               </Link>
             </div>
           </div>
@@ -84,7 +85,7 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 py-16">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              More from the journal
+              Latest coverage
             </h2>
             <Link
               href="/blog"
@@ -94,7 +95,9 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="mt-9 grid gap-x-8 gap-y-10 sm:grid-cols-3">
+          {/* Two columns, not three: the lead article above takes one of the
+              three posts, so this grid only ever holds the remaining two. */}
+          <div className="mt-9 grid gap-x-8 gap-y-10 sm:grid-cols-2">
             {recent.map((post) => (
               <article key={post.slug} className="group relative">
                 <p className="text-xs text-ink-muted">{formatDate(post.date)}</p>
@@ -120,13 +123,13 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 pb-4">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              What we cover
+              Services
             </h2>
             <Link
               href="/services"
               className="text-sm text-accent transition-colors hover:text-accent-strong"
             >
-              All topics &rarr;
+              All services &rarr;
             </Link>
           </div>
 

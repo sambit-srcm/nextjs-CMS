@@ -1,8 +1,9 @@
-# Remo
+# Circuit
 
-Company website built with Next.js and Contentful. All page content —
-banner copy, services, team, blog posts and contact wording — is managed in
-Contentful rather than hardcoded in the components.
+Phone reviews and launch coverage across Android and iOS, built with Next.js
+and Contentful. All page content — banner copy, services, team, articles and
+contact wording — is managed in Contentful rather than hardcoded in the
+components.
 
 ## Stack
 

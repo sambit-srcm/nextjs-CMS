@@ -107,10 +107,11 @@ export async function getPosts(limit?: number): Promise<BlogPost[]> {
   }, []);
 }
 
-export async function getServices(): Promise<Service[]> {
+export async function getServices(limit?: number): Promise<Service[]> {
   return withFallback("getServices", async () => {
     const data = await fetchEntries<ServiceFields>("service", {
       order: "fields.order",
+      ...(limit ? { limit } : {}),
     });
 
     return data.items.flatMap((entry) => {

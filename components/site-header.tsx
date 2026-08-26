@@ -26,10 +26,10 @@ export function SiteHeader() {
           className="flex items-baseline gap-2.5"
         >
           <span className="text-lg font-semibold tracking-tight text-ink">
-            Remo
+            Circuit
           </span>
           <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
-            Cycling Journal
+            Phones &amp; Tech
           </span>
         </Link>
 
