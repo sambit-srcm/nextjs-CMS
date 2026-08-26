@@ -11,21 +11,20 @@ export default async function Topics() {
     <div className="flex flex-1 flex-col">
       <section className="mx-auto w-full max-w-5xl px-6 pt-20 pb-6 sm:pt-28">
         <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-          Platforms
+          Services
         </p>
         <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          Android, iOS, and everything launching
+          What we offer
         </h1>
         <p className="mt-5 max-w-xl text-lg leading-8 text-ink-muted">
-          The platforms we follow and the hardware we put through a full
-          review cycle.
+          Commissioned testing and analysis, run separately from editorial.
         </p>
       </section>
 
       <section className="mx-auto w-full max-w-5xl px-6 py-8">
         {topics.length === 0 ? (
           <p className="text-sm text-ink-muted">
-            Platforms are being updated. Please check back shortly.
+            Services are being updated. Please check back shortly.
           </p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-3">

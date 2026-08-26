@@ -5,13 +5,14 @@ import { getPosts, getServices, getSiteSettings } from "@/lib/cms/queries";
 
 export const revalidate = 60;
 
-/** One lead article plus a grid of recent ones. */
-const HOME_POST_COUNT = 4;
+/** The homepage teases three of each; the section pages list them all. */
+const HOME_POST_COUNT = 3;
+const HOME_SERVICE_COUNT = 3;
 
 export default async function Home() {
   const [settings, topics, posts] = await Promise.all([
     getSiteSettings(),
-    getServices(),
+    getServices(HOME_SERVICE_COUNT),
     getPosts(HOME_POST_COUNT),
   ]);
 
@@ -94,7 +95,9 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="mt-9 grid gap-x-8 gap-y-10 sm:grid-cols-3">
+          {/* Two columns, not three: the lead article above takes one of the
+              three posts, so this grid only ever holds the remaining two. */}
+          <div className="mt-9 grid gap-x-8 gap-y-10 sm:grid-cols-2">
             {recent.map((post) => (
               <article key={post.slug} className="group relative">
                 <p className="text-xs text-ink-muted">{formatDate(post.date)}</p>
@@ -120,13 +123,13 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 pb-4">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              Platforms
+              Services
             </h2>
             <Link
               href="/services"
               className="text-sm text-accent transition-colors hover:text-accent-strong"
             >
-              All platforms &rarr;
+              All services &rarr;
             </Link>
           </div>
 
