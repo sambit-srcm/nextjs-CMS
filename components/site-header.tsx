@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { isActive, NAV_LINKS } from "./site-nav";
+import { ThemeToggle } from "./theme-toggle";
 
 /**
  * Primary navigation.
@@ -32,6 +33,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
+        <div className="flex items-center gap-1">
         <nav aria-label="Primary" className="hidden sm:block">
           <ul className="flex items-center gap-1">
             {NAV_LINKS.map((link) => {
@@ -54,6 +56,8 @@ export function SiteHeader() {
             })}
           </ul>
         </nav>
+
+        <ThemeToggle />
 
         <button
           type="button"
@@ -79,6 +83,7 @@ export function SiteHeader() {
             )}
           </svg>
         </button>
+        </div>
       </div>
 
       {open && (

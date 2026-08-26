@@ -4,11 +4,12 @@
  * Design tokens. Every colour in the app resolves through one of these, so a
  * palette change is a change to this file rather than to every component.
  *
- * The site commits to a single dark aubergine treatment rather than tracking
- * the system preference — a deliberate look, not a light theme with a dark
- * variant bolted on.
+ * Dark is the default: the design was built around the aubergine treatment,
+ * and a visitor who has expressed no preference should see it. The inline
+ * script in the root layout applies a stored choice before first paint.
  */
-:root {
+:root,
+:root[data-theme="dark"] {
   --canvas: #0e0817;
   --surface: #171029;
   --surface-raised: #1e1436;
@@ -16,9 +17,33 @@
   --ink: #f4f0fb;
   --ink-muted: #a99cc4;
   --accent: #a855f7;
+  /* Hover target. Lighter than --accent here; darker in the light theme, so
+     both directions read as "more emphasis" against their own background. */
   --accent-strong: #c084fc;
   --accent-ink: #12081f;
   --accent-soft: #241539;
+
+  color-scheme: dark;
+}
+
+/*
+ * The same violet identity carried onto a light ground, rather than a
+ * different palette. The accent darkens because it now sits on white and has
+ * to hold contrast against it.
+ */
+:root[data-theme="light"] {
+  --canvas: #faf8fd;
+  --surface: #ffffff;
+  --surface-raised: #f5effd;
+  --line: #e6dbf6;
+  --ink: #1b1229;
+  --ink-muted: #5f5478;
+  --accent: #7c3aed;
+  --accent-strong: #6b21d4;
+  --accent-ink: #ffffff;
+  --accent-soft: #f2e9fe;
+
+  color-scheme: light;
 }
 
 @theme inline {
@@ -52,12 +77,20 @@ h3 {
   text-wrap: balance;
 }
 
-/* The palette is dark, so form controls must be told not to render light. */
-:root {
-  color-scheme: dark;
-}
-
 ::selection {
   background: var(--accent);
   color: var(--accent-ink);
+}
+
+/*
+ * Which toggle icon shows is decided in CSS rather than from React state, so
+ * the correct one is painted with the very first frame. Deriving it from state
+ * would mean either a hydration mismatch or a visible flip after hydration.
+ */
+[data-theme="dark"] .theme-icon-light {
+  display: none;
+}
+
+[data-theme="light"] .theme-icon-dark {
+  display: none;
 }
