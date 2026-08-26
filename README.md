@@ -26,13 +26,14 @@ Open [http://localhost:3000](http://localhost:3000).
 Copy `.env.example` to `.env.local` and fill it in. None of these are prefixed
 with `NEXT_PUBLIC_`, so they stay server-side and never reach the browser.
 
-| Variable                       | Required | Purpose                                             |
-| ------------------------------ | -------- | --------------------------------------------------- |
-| `CONTENTFUL_SPACE_ID`          | yes      | Space to read from                                  |
-| `CONTENTFUL_DELIVERY_TOKEN`    | yes      | Content Delivery API token (read-only)              |
-| `CONTENTFUL_ENVIRONMENT`       | no       | Defaults to `master`                                |
-| `CONTENTFUL_REVALIDATE_SECRET` | no       | Shared secret for the publish webhook below         |
-| `CONTENTFUL_MANAGEMENT_TOKEN`  | no       | Write token, used only by the contact form endpoint |
+| Variable                       | Required | Purpose                                                             |
+| ------------------------------ | -------- | ------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`         | no       | Public origin, used for canonical links, robots.txt and the sitemap |
+| `CONTENTFUL_SPACE_ID`          | yes      | Space to read from                                                  |
+| `CONTENTFUL_DELIVERY_TOKEN`    | yes      | Content Delivery API token (read-only)                              |
+| `CONTENTFUL_ENVIRONMENT`       | no       | Defaults to `master`                                                |
+| `CONTENTFUL_REVALIDATE_SECRET` | no       | Shared secret for the publish webhook below                         |
+| `CONTENTFUL_MANAGEMENT_TOKEN`  | no       | Write token, used only by the contact form endpoint                 |
 
 Find these under **Settings → API keys** in Contentful.
 
@@ -200,12 +201,13 @@ autocomplete; everything else is default.
 2. Under **Environment Variables**, set each of these for **Production**
    (and Preview if you want branch deploys against the same space):
 
-   | Variable                       | Value                                 |
-   | ------------------------------ | ------------------------------------- |
-   | `CONTENTFUL_SPACE_ID`          | from Contentful → Settings → API keys |
-   | `CONTENTFUL_ENVIRONMENT`       | `master`                              |
-   | `CONTENTFUL_DELIVERY_TOKEN`    | Content Delivery API token            |
-   | `CONTENTFUL_REVALIDATE_SECRET` | generate a fresh secret — see below   |
+   | Variable                       | Value                                                  |
+   | ------------------------------ | ------------------------------------------------------ |
+   | `NEXT_PUBLIC_SITE_URL`         | your production origin, e.g. `https://circuit.example` |
+   | `CONTENTFUL_SPACE_ID`          | from Contentful → Settings → API keys                  |
+   | `CONTENTFUL_ENVIRONMENT`       | `master`                                               |
+   | `CONTENTFUL_DELIVERY_TOKEN`    | Content Delivery API token                             |
+   | `CONTENTFUL_REVALIDATE_SECRET` | generate a fresh secret — see below                    |
 
 3. Deploy. The first build should succeed unchanged; Vercel picks up the
    Next.js preset, installs, builds, and serves.

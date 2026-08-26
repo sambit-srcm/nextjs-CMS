@@ -153,7 +153,7 @@ describe("getServices", () => {
     expect(result.image?.url).toBe("https://cdn.example.com/x.png");
   });
 
-  it("falls back to the entry title for alt text when the asset has none", async () => {
+  it("leaves alt empty when the asset carries no description", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
@@ -177,7 +177,9 @@ describe("getServices", () => {
     );
 
     const [result] = await getServices();
-    expect(result.image?.alt).toBe("Strategy");
+    // Falling back to the entry title would produce alt text repeating the
+    // heading rendered beside the image. Empty marks it decorative instead.
+    expect(result.image?.alt).toBe("");
   });
 
   it("yields null when the matched asset has no file at all", async () => {

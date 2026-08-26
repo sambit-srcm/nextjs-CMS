@@ -28,7 +28,7 @@ const layout = (children: React.ReactNode) =>
 
 describe("generateMetadata", () => {
   it("takes the document title and description from the CMS", async () => {
-    await expect(generateMetadata()).resolves.toEqual({
+    await expect(generateMetadata()).resolves.toMatchObject({
       title: "Circuit",
       description: "Reviews across Android and iOS.",
     });
@@ -54,6 +54,14 @@ describe("generateMetadata", () => {
 
     expect(meta.title).toBe("Circuit");
     expect(meta.description).toContain("Phone reviews");
+  });
+  it("declares a metadataBase and the home canonical", async () => {
+    const meta = await generateMetadata();
+
+    // metadataBase is what resolves every relative canonical below it into an
+    // absolute URL. Which origin it picks is covered in lib/site-url.test.ts.
+    expect(meta.metadataBase).toBeInstanceOf(URL);
+    expect(meta.alternates?.canonical).toBe("/");
   });
 });
 

@@ -59,6 +59,15 @@ describe("About page", () => {
     expect(html).toContain("ananya.jpg");
   });
 
+  it("marks writer photos decorative, since the name is the heading", async () => {
+    const html = render(await About());
+
+    // Alt text here would repeat the adjacent name, or — when an editor
+    // renames an entry without updating the asset — contradict it.
+    expect(html).toContain('alt=""');
+    expect(html).not.toContain('alt="Ananya Prasad"');
+  });
+
   it("falls back to initials when a writer has no photo", async () => {
     getTeam.mockResolvedValue([aMember({ photo: null, name: "Marcus Feld" })]);
 

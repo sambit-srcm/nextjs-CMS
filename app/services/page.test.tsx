@@ -37,6 +37,10 @@ describe("Services page", () => {
     expect(html).toContain("reviews.jpg");
   });
 
+  it("marks service images decorative, since the title follows them", async () => {
+    expect(render(await Topics())).toContain('alt=""');
+  });
+
   it("substitutes a gradient when a service has no image", async () => {
     getServices.mockResolvedValue([aService({ image: null })]);
 
