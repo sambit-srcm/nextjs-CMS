@@ -1,118 +1,146 @@
 import Link from "next/link";
 
+import { formatDate } from "@/components/format";
 import { getPosts, getServices, getSiteSettings } from "@/lib/cms/queries";
 
-// The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
-// does not apply. Revalidation has to be declared at the segment level.
 export const revalidate = 60;
 
-/** The homepage teases the three most recent posts; /blog lists them all. */
-const LATEST_POST_COUNT = 3;
+/** One lead article plus a grid of recent ones. */
+const HOME_POST_COUNT = 4;
 
 export default async function Home() {
-  const [settings, services, posts] = await Promise.all([
+  const [settings, topics, posts] = await Promise.all([
     getSiteSettings(),
     getServices(),
-    getPosts(LATEST_POST_COUNT),
+    getPosts(HOME_POST_COUNT),
   ]);
 
+  const [lead, ...recent] = posts;
+
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 flex-col">
       {settings && (
-        <section className="flex flex-col items-center gap-4 px-6 py-24 text-center">
-          <h1 className="text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">
-            {settings.bannerTitle}
-          </h1>
-          <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
-            {settings.bannerSubtitle}
-          </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/services"
-              className="rounded-md bg-zinc-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200"
-            >
-              Explore our services
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600"
-            >
-              Get in touch
-            </Link>
+        <section className="relative overflow-hidden border-b border-line">
+          {/* Soft aubergine bloom behind the masthead. Decorative only. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[46rem] -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
+          />
+          <div className="relative mx-auto w-full max-w-6xl px-6 pt-20 pb-16 sm:pt-28">
+            <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+              Independent cycling journal
+            </p>
+            <h1 className="mt-5 max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-ink sm:text-6xl">
+              {settings.bannerTitle}
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-muted">
+              {settings.bannerSubtitle}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Link
+                href="/blog"
+                className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong"
+              >
+                Read the journal
+              </Link>
+              <Link
+                href="/about"
+                className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-accent"
+              >
+                How we test
+              </Link>
+            </div>
           </div>
         </section>
       )}
 
-      {services.length > 0 && (
-        <section className="mx-auto w-full max-w-5xl px-6 py-16">
+      {lead && (
+        <section className="mx-auto w-full max-w-6xl px-6 pt-14">
+          <article className="group relative overflow-hidden rounded-2xl border border-line bg-surface-raised p-8 transition-colors hover:border-accent sm:p-12">
+            <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+              Latest
+            </p>
+            <h2 className="mt-4 max-w-3xl text-2xl leading-snug font-semibold tracking-tight text-ink sm:text-4xl">
+              <Link
+                href={`/blog/${lead.slug}`}
+                className="after:absolute after:inset-0"
+              >
+                {lead.title}
+              </Link>
+            </h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-ink-muted">
+              {lead.excerpt}
+            </p>
+            <p className="mt-7 text-sm text-ink-muted">
+              {lead.author}
+              {lead.author && formatDate(lead.date) && " · "}
+              {formatDate(lead.date)}
+            </p>
+          </article>
+        </section>
+      )}
+
+      {recent.length > 0 && (
+        <section className="mx-auto w-full max-w-6xl px-6 py-16">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-2xl font-semibold text-zinc-950 dark:text-zinc-50">
-              Services
+            <h2 className="text-xl font-semibold tracking-tight text-ink">
+              More from the journal
             </h2>
             <Link
-              href="/services"
-              className="text-sm text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
+              href="/blog"
+              className="text-sm text-accent transition-colors hover:text-accent-strong"
             >
-              All services &rarr;
+              All articles &rarr;
             </Link>
           </div>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {services.map((service) => (
-              <div
-                key={service.title}
-                className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
-              >
-                <h3 className="text-lg font-medium text-zinc-950 dark:text-zinc-50">
-                  {service.title}
+
+          <div className="mt-9 grid gap-x-8 gap-y-10 sm:grid-cols-3">
+            {recent.map((post) => (
+              <article key={post.slug} className="group relative">
+                <p className="text-xs text-ink-muted">{formatDate(post.date)}</p>
+                <h3 className="mt-2 text-lg leading-snug font-medium text-ink transition-colors group-hover:text-accent-strong">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="after:absolute after:inset-0"
+                  >
+                    {post.title}
+                  </Link>
                 </h3>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  {service.description}
+                <p className="mt-2.5 text-sm leading-6 text-ink-muted">
+                  {post.excerpt}
                 </p>
-              </div>
+                <p className="mt-3 text-xs text-ink-muted">{post.author}</p>
+              </article>
             ))}
           </div>
         </section>
       )}
 
-      {posts.length > 0 && (
-        <section className="mx-auto w-full max-w-5xl px-6 py-16">
+      {topics.length > 0 && (
+        <section className="mx-auto w-full max-w-6xl px-6 pb-4">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-2xl font-semibold text-zinc-950 dark:text-zinc-50">
-              Latest from the blog
+            <h2 className="text-xl font-semibold tracking-tight text-ink">
+              What we cover
             </h2>
             <Link
-              href="/blog"
-              className="text-sm text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
+              href="/services"
+              className="text-sm text-accent transition-colors hover:text-accent-strong"
             >
-              All posts &rarr;
+              All topics &rarr;
             </Link>
           </div>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {posts.map((post) => (
-              <article
-                key={post.slug}
-                className="relative rounded-lg border border-zinc-200 bg-white p-6 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+
+          <div className="mt-9 grid gap-4 sm:grid-cols-3">
+            {topics.map((topic) => (
+              <div
+                key={topic.title}
+                className="rounded-xl border border-line bg-surface p-6 transition-colors hover:border-accent"
               >
-                <h3 className="text-lg font-medium text-zinc-950 dark:text-zinc-50">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="after:absolute after:inset-0 hover:underline"
-                  >
-                    {post.title}
-                  </Link>
-                </h3>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
-                  {post.author} &middot;{" "}
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                <h3 className="text-base font-medium text-ink">{topic.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-ink-muted">
+                  {topic.description}
                 </p>
-                <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-                  {post.excerpt}
-                </p>
-              </article>
+              </div>
             ))}
           </div>
         </section>

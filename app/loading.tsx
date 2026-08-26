@@ -1,31 +1,30 @@
 /**
  * Suspense fallback shown while a route's content is being fetched.
  *
- * Mirrors the shared page skeleton — centred hero, then a card grid — so the
+ * Mirrors the shared page skeleton — masthead, then a stack of entries — so the
  * layout does not shift when the real content arrives.
  */
 export default function Loading() {
   return (
     <div
-      className="flex flex-1 flex-col bg-zinc-50 dark:bg-black"
+      className="flex flex-1 flex-col"
       role="status"
       aria-label="Loading content"
     >
-      <section className="flex flex-col items-center gap-4 px-6 py-24">
-        <div className="h-12 w-64 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-6 w-96 max-w-full animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+      <section className="mx-auto w-full max-w-4xl px-6 pt-20 pb-6 sm:pt-28">
+        <div className="h-3 w-40 animate-pulse rounded bg-surface-raised" />
+        <div className="mt-5 h-12 w-80 max-w-full animate-pulse rounded-lg bg-surface-raised" />
+        <div className="mt-5 h-5 w-full max-w-md animate-pulse rounded bg-surface-raised" />
       </section>
 
-      <section className="mx-auto w-full max-w-5xl px-6 py-16">
-        <div className="grid gap-6 sm:grid-cols-3">
+      <section className="mx-auto w-full max-w-4xl px-6 pb-8">
+        <div className="divide-y divide-line border-t border-line">
           {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
-            >
-              <div className="h-5 w-3/4 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-              <div className="mt-3 h-4 w-full animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-              <div className="mt-2 h-4 w-5/6 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+            <div key={i} className="py-9">
+              <div className="h-3 w-32 animate-pulse rounded bg-surface-raised" />
+              <div className="mt-3 h-6 w-3/4 animate-pulse rounded bg-surface-raised" />
+              <div className="mt-4 h-4 w-full animate-pulse rounded bg-surface-raised" />
+              <div className="mt-2 h-4 w-5/6 animate-pulse rounded bg-surface-raised" />
             </div>
           ))}
         </div>

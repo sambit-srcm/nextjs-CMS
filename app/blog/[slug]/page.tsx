@@ -45,39 +45,39 @@ export async function generateMetadata({
 const renderOptions: Options = {
   renderMark: {
     [MARKS.BOLD]: (text) => (
-      <strong className="font-medium text-zinc-950 dark:text-zinc-50">
+      <strong className="font-medium text-ink">
         {text}
       </strong>
     ),
     [MARKS.CODE]: (text) => (
-      <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-sm dark:bg-zinc-900">
+      <code className="rounded bg-accent-soft px-1.5 py-0.5 font-mono text-[0.9em] text-accent-strong">
         {text}
       </code>
     ),
   },
   renderNode: {
     [BLOCKS.PARAGRAPH]: (_node, children) => (
-      <p className="mt-4 text-base leading-7 text-zinc-600 dark:text-zinc-400">
+      <p className="mt-5 text-[1.0625rem] leading-8 text-ink-muted">
         {children}
       </p>
     ),
     [BLOCKS.HEADING_2]: (_node, children) => (
-      <h2 className="mt-10 text-xl font-semibold text-zinc-950 dark:text-zinc-50">
+      <h2 className="mt-12 text-xl font-semibold tracking-tight text-ink">
         {children}
       </h2>
     ),
     [BLOCKS.HEADING_3]: (_node, children) => (
-      <h3 className="mt-8 text-lg font-medium text-zinc-950 dark:text-zinc-50">
+      <h3 className="mt-10 text-lg font-medium text-ink">
         {children}
       </h3>
     ),
     [BLOCKS.UL_LIST]: (_node, children) => (
-      <ul className="mt-4 list-disc space-y-1 pl-6 text-base text-zinc-600 dark:text-zinc-400">
+      <ul className="mt-5 list-disc space-y-2 pl-6 text-[1.0625rem] leading-8 text-ink-muted marker:text-accent">
         {children}
       </ul>
     ),
     [BLOCKS.QUOTE]: (_node, children) => (
-      <blockquote className="mt-6 border-l-2 border-zinc-300 pl-4 text-zinc-600 italic dark:border-zinc-700 dark:text-zinc-400">
+      <blockquote className="mt-8 border-l-2 border-accent pl-5 text-lg leading-8 text-ink italic">
         {children}
       </blockquote>
     ),
@@ -103,20 +103,20 @@ export default async function Article({ params }: PageProps<"/blog/[slug]">) {
   if (!post) notFound();
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <article className="mx-auto w-full max-w-3xl px-6 py-16">
+    <div className="flex flex-1 flex-col">
+      <article className="mx-auto w-full max-w-2xl px-6 pt-20 pb-16 sm:pt-28">
         <Link
           href="/blog"
-          className="text-sm text-zinc-500 transition-colors hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-50"
+          className="text-sm text-accent transition-colors hover:text-accent-strong"
         >
           &larr; Back to blog
         </Link>
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+        <h1 className="mt-8 text-3xl leading-[1.12] font-semibold tracking-tight text-ink sm:text-5xl">
           {post.title}
         </h1>
 
-        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-500">
+        <p className="mt-5 text-sm text-ink-muted">
           {post.author}
           {post.author && post.date && " · "}
           {post.date && (
@@ -136,7 +136,7 @@ export default async function Article({ params }: PageProps<"/blog/[slug]">) {
             alt={post.coverImage.alt}
             width={post.coverImage.width ?? 1200}
             height={post.coverImage.height ?? 630}
-            className="mt-8 w-full rounded-lg object-cover"
+            className="mt-10 w-full rounded-xl object-cover"
             priority
           />
         )}
@@ -146,7 +146,7 @@ export default async function Article({ params }: PageProps<"/blog/[slug]">) {
             {documentToReactComponents(post.body, renderOptions)}
           </div>
         ) : (
-          <p className="mt-8 text-base leading-7 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-8 text-[1.0625rem] leading-8 text-ink-muted">
             {post.excerpt}
           </p>
         )}
