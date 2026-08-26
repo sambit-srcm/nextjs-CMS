@@ -11,6 +11,24 @@ export default defineConfig({
     environment: "node",
     include: ["**/*.test.ts"],
     setupFiles: ["test/setup.ts"],
+    coverage: {
+      provider: "v8",
+      // Everything matching `include` is reported, tested or not, so an
+      // untested module shows as 0% rather than vanishing from the total.
+      include: ["lib/**", "app/api/**", "components/**"],
+      // Route and page components are React Server Components; exercising them
+      // needs a rendering harness rather than a unit test, so they are measured
+      // through the query and validation layers they delegate to.
+      // Types compile away, and .tsx here is React chrome rather than logic.
+      exclude: ["**/*.test.ts", "**/*.d.ts", "**/types.ts", "**/*.tsx"],
+      reporter: ["text", "html"],
+      thresholds: {
+        statements: 90,
+        branches: 90,
+        functions: 90,
+        lines: 90,
+      },
+    },
     exclude: ["node_modules/**", ".next/**"],
   },
   resolve: {

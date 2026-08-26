@@ -105,6 +105,19 @@ describe("POST /api/contact", () => {
     expect(body).not.toContain("Contentful");
   });
 
+  it("still returns 502 for a non-CmsError failure", async () => {
+    // The catch has to cope with anything the write path throws, not only the
+    // typed error — a TypeError from a bad response shape, for instance.
+    createContactSubmission.mockRejectedValue(new TypeError("unexpected"));
+
+    const res = await POST(post(valid));
+
+    expect(res.status).toBe(502);
+    await expect(res.json()).resolves.toEqual({
+      error: "Could not send your message. Please try again later.",
+    });
+  });
+
   it("logs the upstream reason server-side", async () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     createContactSubmission.mockRejectedValue(
