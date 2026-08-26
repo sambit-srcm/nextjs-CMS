@@ -17,18 +17,23 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur dark:border-zinc-800 dark:bg-black/80">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-50 border-b border-line bg-canvas/80 backdrop-blur-md">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
         <Link
           href="/"
-          className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
           onClick={() => setOpen(false)}
+          className="flex items-baseline gap-2.5"
         >
-          Remo
+          <span className="text-lg font-semibold tracking-tight text-ink">
+            Remo
+          </span>
+          <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
+            Cycling Journal
+          </span>
         </Link>
 
         <nav aria-label="Primary" className="hidden sm:block">
-          <ul className="flex items-center gap-6">
+          <ul className="flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const active = isActive(pathname, link.href);
               return (
@@ -36,11 +41,11 @@ export function SiteHeader() {
                   <Link
                     href={link.href}
                     aria-current={active ? "page" : undefined}
-                    className={
+                    className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
                       active
-                        ? "text-sm font-medium text-zinc-950 dark:text-zinc-50"
-                        : "text-sm text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
-                    }
+                        ? "bg-accent-soft font-medium text-accent-strong"
+                        : "text-ink-muted hover:text-ink"
+                    }`}
                   >
                     {link.label}
                   </Link>
@@ -56,7 +61,7 @@ export function SiteHeader() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="rounded-md p-2 text-zinc-600 transition-colors hover:text-zinc-950 sm:hidden dark:text-zinc-400 dark:hover:text-zinc-50"
+          className="rounded-full p-2 text-ink-muted transition-colors hover:text-ink sm:hidden"
         >
           <svg
             aria-hidden="true"
@@ -80,9 +85,9 @@ export function SiteHeader() {
         <nav
           id="mobile-nav"
           aria-label="Primary"
-          className="border-t border-zinc-200 sm:hidden dark:border-zinc-800"
+          className="border-t border-line sm:hidden"
         >
-          <ul className="mx-auto flex w-full max-w-5xl flex-col px-6 py-2">
+          <ul className="mx-auto flex w-full max-w-6xl flex-col px-6 py-2">
             {NAV_LINKS.map((link) => {
               const active = isActive(pathname, link.href);
               return (
@@ -91,11 +96,11 @@ export function SiteHeader() {
                     href={link.href}
                     onClick={() => setOpen(false)}
                     aria-current={active ? "page" : undefined}
-                    className={
+                    className={`block py-3 text-sm ${
                       active
-                        ? "block py-3 text-sm font-medium text-zinc-950 dark:text-zinc-50"
-                        : "block py-3 text-sm text-zinc-600 dark:text-zinc-400"
-                    }
+                        ? "font-medium text-accent-strong"
+                        : "text-ink-muted"
+                    }`}
                   >
                     {link.label}
                   </Link>

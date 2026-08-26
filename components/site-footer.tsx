@@ -8,19 +8,26 @@ import { NAV_LINKS } from "./site-nav";
  */
 export function SiteFooter() {
   return (
-    <footer className="border-t border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-black">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-zinc-500 dark:text-zinc-500">
-          &copy; {new Date().getFullYear()} Remo. All rights reserved.
-        </p>
+    <footer className="mt-24 border-t border-line bg-surface">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-14 sm:flex-row sm:items-start sm:justify-between">
+        <div className="max-w-sm">
+          <p className="text-lg font-semibold tracking-tight text-ink">Remo</p>
+          <p className="mt-3 text-sm leading-6 text-ink-muted">
+            An independent cycling journal. Long routes, loose surfaces, and the
+            kit that holds up.
+          </p>
+        </div>
 
         <nav aria-label="Footer">
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
+          <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+            Sections
+          </p>
+          <ul className="mt-4 flex flex-col gap-2.5">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
+                  className="text-sm text-ink-muted transition-colors hover:text-ink"
                 >
                   {link.label}
                 </Link>
@@ -28,6 +35,12 @@ export function SiteFooter() {
             ))}
           </ul>
         </nav>
+      </div>
+
+      <div className="border-t border-line">
+        <p className="mx-auto w-full max-w-6xl px-6 py-6 text-xs text-ink-muted">
+          &copy; {new Date().getFullYear()} Remo. All rights reserved.
+        </p>
       </div>
     </footer>
   );

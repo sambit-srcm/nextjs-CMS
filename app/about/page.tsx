@@ -2,8 +2,6 @@ import Image from "next/image";
 
 import { getSiteSettings, getTeam } from "@/lib/cms/queries";
 
-// The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
-// does not apply. Revalidation has to be declared at the segment level.
 export const revalidate = 60;
 
 function initials(name: string) {
@@ -24,25 +22,28 @@ export default async function About() {
   );
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <section className="flex flex-col items-center gap-4 px-6 py-24 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">
-          About us
+    <div className="flex flex-1 flex-col">
+      <section className="mx-auto w-full max-w-4xl px-6 pt-20 pb-6 sm:pt-28">
+        <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+          About
+        </p>
+        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          Who writes this
         </h1>
       </section>
 
       {statements.length > 0 && (
-        <section className="mx-auto w-full max-w-5xl px-6 py-16">
-          <div className="grid gap-6 sm:grid-cols-2">
+        <section className="mx-auto w-full max-w-4xl px-6 py-8">
+          <div className="grid gap-4 sm:grid-cols-2">
             {statements.map((item) => (
               <div
                 key={item.title}
-                className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+                className="rounded-xl border border-line bg-surface p-7"
               >
-                <h2 className="text-lg font-medium text-zinc-950 dark:text-zinc-50">
+                <h2 className="text-base font-medium text-accent-strong">
                   {item.title}
                 </h2>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="mt-3 text-sm leading-7 text-ink-muted">
                   {item.body}
                 </p>
               </div>
@@ -51,46 +52,41 @@ export default async function About() {
         </section>
       )}
 
-      <section className="mx-auto w-full max-w-5xl px-6 py-16">
-        <h2 className="text-2xl font-semibold text-zinc-950 dark:text-zinc-50">
-          Team
+      <section className="mx-auto w-full max-w-4xl px-6 py-10">
+        <h2 className="text-xl font-semibold tracking-tight text-ink">
+          Contributors
         </h2>
         {team.length === 0 ? (
-          <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-500">
-            Team details are being updated. Please check back shortly.
+          <p className="mt-8 text-sm text-ink-muted">
+            Contributor details are being updated. Please check back shortly.
           </p>
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          <ul className="mt-9 grid gap-8 sm:grid-cols-3">
             {team.map((member) => (
-              <div
-                key={member.name}
-                className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
-              >
+              <li key={member.name}>
                 {member.photo ? (
                   <Image
                     src={member.photo.url}
                     alt={member.photo.alt}
-                    width={48}
-                    height={48}
-                    className="h-12 w-12 rounded-full object-cover"
+                    width={56}
+                    height={56}
+                    className="h-14 w-14 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-soft text-sm font-medium text-accent-strong">
                     {initials(member.name)}
                   </div>
                 )}
-                <h3 className="mt-4 text-lg font-medium text-zinc-950 dark:text-zinc-50">
+                <h3 className="mt-4 text-base font-medium text-ink">
                   {member.name}
                 </h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-500">
-                  {member.designation}
-                </p>
-                <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="text-sm text-accent">{member.designation}</p>
+                <p className="mt-3 text-sm leading-6 text-ink-muted">
                   {member.bio}
                 </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </section>
     </div>

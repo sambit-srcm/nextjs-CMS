@@ -1,56 +1,61 @@
 import Link from "next/link";
 
+import { formatDate } from "@/components/format";
 import { getPosts } from "@/lib/cms/queries";
 
-// The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
-// does not apply. Revalidation has to be declared at the segment level.
 export const revalidate = 60;
 
 export default async function Blog() {
   const posts = await getPosts();
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <section className="flex flex-col items-center gap-4 px-6 py-24 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">
-          Blog
+    <div className="flex flex-1 flex-col">
+      <section className="mx-auto w-full max-w-4xl px-6 pt-20 pb-6 sm:pt-28">
+        <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+          The journal
+        </p>
+        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          Every article
         </h1>
+        <p className="mt-5 max-w-xl text-lg leading-8 text-ink-muted">
+          Routes, kit that survived a season, and the maintenance nobody writes
+          about.
+        </p>
       </section>
 
-      <section className="mx-auto w-full max-w-3xl px-6 py-16">
+      <section className="mx-auto w-full max-w-4xl px-6 pb-8">
         {posts.length === 0 ? (
-          <p className="text-center text-sm text-zinc-500 dark:text-zinc-500">
-            No posts have been published yet. Please check back shortly.
+          <p className="text-sm text-ink-muted">
+            No articles have been published yet. Please check back shortly.
           </p>
         ) : (
-          <div className="flex flex-col gap-6">
+          <ul className="divide-y divide-line border-t border-line">
             {posts.map((post) => (
-              <article
-                key={post.slug}
-                className="relative rounded-lg border border-zinc-200 bg-white p-6 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
-              >
-                <h2 className="text-lg font-medium text-zinc-950 dark:text-zinc-50">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="after:absolute after:inset-0 hover:underline"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
-                  {post.author} &middot;{" "}
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-                  {post.excerpt}
-                </p>
-              </article>
+              <li key={post.slug}>
+                <article className="group relative py-9">
+                  <p className="text-xs text-ink-muted">
+                    {formatDate(post.date)}
+                    {post.author && post.date && " · "}
+                    {post.author}
+                  </p>
+                  <h2 className="mt-2.5 text-xl leading-snug font-medium tracking-tight text-ink transition-colors group-hover:text-accent-strong sm:text-2xl">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="after:absolute after:inset-0"
+                    >
+                      {post.title}
+                    </Link>
+                  </h2>
+                  <p className="mt-3.5 max-w-2xl text-base leading-7 text-ink-muted">
+                    {post.excerpt}
+                  </p>
+                  <p className="mt-4 text-sm font-medium text-accent">
+                    Read article &rarr;
+                  </p>
+                </article>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </section>
     </div>

@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens. Every colour in the app resolves through one of these, so a
+ * palette change is a change to this file rather than to every component.
+ *
+ * The site commits to a single dark aubergine treatment rather than tracking
+ * the system preference — a deliberate look, not a light theme with a dark
+ * variant bolted on.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas: #0e0817;
+  --surface: #171029;
+  --surface-raised: #1e1436;
+  --line: #2c2044;
+  --ink: #f4f0fb;
+  --ink-muted: #a99cc4;
+  --accent: #a855f7;
+  --accent-strong: #c084fc;
+  --accent-ink: #12081f;
+  --accent-soft: #241539;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  /* Previously hardcoded to Arial, which overrode the Geist fonts the root
+     layout loads and exposes as CSS variables. */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Keeps multi-line headings from leaving a single orphaned word. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* The palette is dark, so form controls must be told not to render light. */
+:root {
+  color-scheme: dark;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
