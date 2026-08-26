@@ -28,7 +28,7 @@ export default async function Home() {
           />
           <div className="relative mx-auto w-full max-w-6xl px-6 pt-20 pb-16 sm:pt-28">
             <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-              Independent cycling journal
+              Independent phone reviews
             </p>
             <h1 className="mt-5 max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-ink sm:text-6xl">
               {settings.bannerTitle}
@@ -41,13 +41,13 @@ export default async function Home() {
                 href="/blog"
                 className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong"
               >
-                Read the journal
+                Read the reviews
               </Link>
               <Link
                 href="/about"
                 className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-accent"
               >
-                How we test
+                How we review
               </Link>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 py-16">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              More from the journal
+              Latest coverage
             </h2>
             <Link
               href="/blog"
@@ -120,13 +120,13 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 pb-4">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              What we cover
+              Platforms
             </h2>
             <Link
               href="/services"
               className="text-sm text-accent transition-colors hover:text-accent-strong"
             >
-              All topics &rarr;
+              All platforms &rarr;
             </Link>
           </div>
 

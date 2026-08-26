@@ -1,8 +1,8 @@
 /** Single source of truth for the primary navigation, shared by header and footer. */
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/blog", label: "Journal" },
-  { href: "/services", label: "Topics" },
+  { href: "/blog", label: "Reviews" },
+  { href: "/services", label: "Platforms" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const;

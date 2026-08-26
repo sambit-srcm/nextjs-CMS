@@ -29,7 +29,7 @@ export function SiteHeader() {
             Remo
           </span>
           <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
-            Cycling Journal
+            Phones &amp; Tech
           </span>
         </Link>
 

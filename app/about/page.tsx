@@ -58,7 +58,7 @@ export default async function About() {
         </h2>
         {team.length === 0 ? (
           <p className="mt-8 text-sm text-ink-muted">
-            Contributor details are being updated. Please check back shortly.
+            Writer details are being updated. Please check back shortly.
           </p>
         ) : (
           <ul className="mt-9 grid gap-8 sm:grid-cols-3">

@@ -13,8 +13,8 @@ export function SiteFooter() {
         <div className="max-w-sm">
           <p className="text-lg font-semibold tracking-tight text-ink">Remo</p>
           <p className="mt-3 text-sm leading-6 text-ink-muted">
-            An independent cycling journal. Long routes, loose surfaces, and the
-            kit that holds up.
+            Independent phone reviews and launch coverage. Devices tested as
+            daily drivers, not unboxed and filed.
           </p>
         </div>
 
