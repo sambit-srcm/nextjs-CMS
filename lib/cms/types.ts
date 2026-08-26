@@ -84,6 +84,8 @@ export type Service = {
 };
 
 export type TeamMember = {
+  /** The Contentful entry id, which is also the detail page segment. */
+  id: string;
   name: string;
   designation: string;
   bio: string;

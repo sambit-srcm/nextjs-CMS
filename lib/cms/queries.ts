@@ -146,6 +146,7 @@ export async function getTeam(): Promise<TeamMember[]> {
 
       return [
         {
+          id: entry.sys.id,
           name,
           designation,
           bio: optionalString(f.bio),
@@ -235,6 +236,33 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       excerpt: optionalString(f.excerpt),
       coverImage: resolveImage(f.coverImage, assets(data), title),
       body: f.body ?? null,
+    };
+  }, null);
+}
+
+export async function getTeamMember(id: string): Promise<TeamMember | null> {
+  return withFallback(`getTeamMember(${id})`, async () => {
+    // Filtered server-side by entry id rather than fetching the whole team and
+    // finding one, so the request stays proportional to what is rendered.
+    const data = await fetchEntries<TeamMemberFields>("teamMember", {
+      "sys.id": id,
+      limit: 1,
+    });
+
+    const entry = data.items[0];
+    if (!entry) return null;
+
+    const f = entry.fields;
+    const name = requiredString(f.name, "name", entry.sys.id);
+    const designation = requiredString(f.designation, "designation", entry.sys.id);
+    if (!name || !designation) return null;
+
+    return {
+      id: entry.sys.id,
+      name,
+      designation,
+      bio: optionalString(f.bio),
+      photo: resolveImage(f.photo, assets(data), name),
     };
   }, null);
 }

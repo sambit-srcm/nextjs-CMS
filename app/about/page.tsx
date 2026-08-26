@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { getSiteSettings, getTeam } from "@/lib/cms/queries";
 
@@ -63,7 +64,7 @@ export default async function About() {
         ) : (
           <ul className="mt-9 grid gap-8 sm:grid-cols-3">
             {team.map((member) => (
-              <li key={member.name}>
+              <li key={member.id} className="group relative">
                 {member.photo ? (
                   <Image
                     src={member.photo.url}
@@ -77,8 +78,13 @@ export default async function About() {
                     {initials(member.name)}
                   </div>
                 )}
-                <h3 className="mt-4 text-base font-medium text-ink">
-                  {member.name}
+                <h3 className="mt-4 text-base font-medium text-ink transition-colors group-hover:text-accent-strong">
+                  <Link
+                    href={`/team/${member.id}`}
+                    className="after:absolute after:inset-0"
+                  >
+                    {member.name}
+                  </Link>
                 </h3>
                 <p className="text-sm text-accent">{member.designation}</p>
                 <p className="mt-3 text-sm leading-6 text-ink-muted">
