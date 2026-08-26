@@ -270,6 +270,7 @@ describe("getSiteSettings", () => {
     );
 
     await expect(getSiteSettings()).resolves.toEqual({
+      logo: null,
       siteName: "Circuit",
       siteTagline: "Phones & Tech",
       footerTagline: "Independent reviews.",

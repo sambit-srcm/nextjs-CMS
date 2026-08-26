@@ -68,6 +68,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader
           siteName={settings?.siteName || FALLBACK.siteName}
           siteTagline={settings?.siteTagline || FALLBACK.siteTagline}
+          logo={settings?.logo}
         />
         {children}
         <SiteFooter

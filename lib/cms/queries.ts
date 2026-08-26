@@ -133,6 +133,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       if (!bannerTitle) return null;
 
       return {
+        logo: resolveImage(f.logo, assets(data)),
         siteName: optionalString(f.siteName),
         siteTagline: optionalString(f.siteTagline),
         footerTagline: optionalString(f.footerTagline),
