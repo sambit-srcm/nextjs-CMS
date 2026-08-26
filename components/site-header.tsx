@@ -13,7 +13,13 @@ import { ThemeToggle } from "./theme-toggle";
  * A Client Component because the active link is derived from the current
  * pathname and the mobile menu holds open/closed state.
  */
-export function SiteHeader() {
+export function SiteHeader({
+  siteName,
+  siteTagline,
+}: {
+  siteName: string;
+  siteTagline: string;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -26,10 +32,10 @@ export function SiteHeader() {
           className="flex items-baseline gap-2.5"
         >
           <span className="text-lg font-semibold tracking-tight text-ink">
-            Circuit
+            {siteName}
           </span>
           <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
-            Phones &amp; Tech
+            {siteTagline}
           </span>
         </Link>
 

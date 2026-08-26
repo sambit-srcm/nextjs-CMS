@@ -1,7 +1,12 @@
 import Link from "next/link";
 
 import { formatDate } from "@/components/format";
-import { getPosts, getServices, getSiteSettings } from "@/lib/cms/queries";
+import {
+  getPageContent,
+  getPosts,
+  getServices,
+  getSiteSettings,
+} from "@/lib/cms/queries";
 
 export const revalidate = 60;
 
@@ -10,7 +15,8 @@ const HOME_POST_COUNT = 3;
 const HOME_SERVICE_COUNT = 3;
 
 export default async function Home() {
-  const [settings, topics, posts] = await Promise.all([
+  const [copy, settings, topics, posts] = await Promise.all([
+    getPageContent("page-home"),
     getSiteSettings(),
     getServices(HOME_SERVICE_COUNT),
     getPosts(HOME_POST_COUNT),
@@ -28,9 +34,11 @@ export default async function Home() {
             className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[46rem] -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
           />
           <div className="relative mx-auto w-full max-w-6xl px-6 pt-20 pb-16 sm:pt-28">
-            <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
-              Independent phone reviews
-            </p>
+            {copy?.eyebrow && (
+              <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+                {copy.eyebrow}
+              </p>
+            )}
             <h1 className="mt-5 max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-ink sm:text-6xl">
               {settings.bannerTitle}
             </h1>
@@ -42,13 +50,13 @@ export default async function Home() {
                 href="/blog"
                 className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong"
               >
-                Read the reviews
+                {copy?.primaryCtaLabel}
               </Link>
               <Link
                 href="/about"
                 className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-accent"
               >
-                How we review
+                {copy?.secondaryCtaLabel}
               </Link>
             </div>
           </div>
@@ -85,7 +93,7 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 py-16">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              Latest coverage
+              {copy?.sectionOneHeading}
             </h2>
             <Link
               href="/blog"
@@ -123,7 +131,7 @@ export default async function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 pb-4">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-xl font-semibold tracking-tight text-ink">
-              Services
+              {copy?.sectionTwoHeading}
             </h2>
             <Link
               href="/services"
