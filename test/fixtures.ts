@@ -28,6 +28,7 @@ export const aPageContent = (over: Partial<PageContent> = {}): PageContent => ({
 export const aSiteSettings = (
   over: Partial<SiteSettings> = {},
 ): SiteSettings => ({
+  logo: { url: "https://images.test/logo.jpg", alt: "" },
   siteName: "Circuit",
   siteTagline: "Phones & Tech",
   footerTagline: "Independent phone reviews.",

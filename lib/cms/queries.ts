@@ -57,6 +57,59 @@ function assets<T>(collection: EntryCollection<T>): RawAsset[] | undefined {
   return collection.includes?.Asset;
 }
 
+/** One Contentful entry as it arrives from the REST API. */
+type Entry<Fields> = { sys: { id: string }; fields: Partial<Fields> };
+
+/**
+ * Maps a blogPost entry to the flat shape the UI consumes, or null when a
+ * field the UI cannot render without is missing.
+ *
+ * Shared by getPosts and getPostBySlug so the two cannot drift; a field added
+ * here reaches the listing and the article page together.
+ */
+function toBlogPost(
+  entry: Entry<BlogPostFields>,
+  assets: RawAsset[] | undefined,
+): BlogPost | null {
+  const f = entry.fields;
+  const title = requiredString(f.title, "title", entry.sys.id);
+  const slug = requiredString(f.slug, "slug", entry.sys.id);
+  if (!title || !slug) return null;
+
+  return {
+    title,
+    slug,
+    author: optionalString(f.author),
+    date: optionalString(f.date),
+    excerpt: optionalString(f.excerpt),
+    coverImage: resolveImage(f.coverImage, assets),
+    body: f.body ?? null,
+  };
+}
+
+/** As `toBlogPost`, for teamMember entries. Shared by getTeam and getTeamMember. */
+function toTeamMember(
+  entry: Entry<TeamMemberFields>,
+  assets: RawAsset[] | undefined,
+): TeamMember | null {
+  const f = entry.fields;
+  const name = requiredString(f.name, "name", entry.sys.id);
+  const designation = requiredString(
+    f.designation,
+    "designation",
+    entry.sys.id,
+  );
+  if (!name || !designation) return null;
+
+  return {
+    id: entry.sys.id,
+    name,
+    designation,
+    bio: optionalString(f.bio),
+    photo: resolveImage(f.photo, assets),
+  };
+}
+
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   return withFallback(
     "getSiteSettings",
@@ -80,6 +133,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
       if (!bannerTitle) return null;
 
       return {
+        logo: resolveImage(f.logo, assets(data)),
         siteName: optionalString(f.siteName),
         siteTagline: optionalString(f.siteTagline),
         footerTagline: optionalString(f.footerTagline),
@@ -106,22 +160,8 @@ export async function getPosts(limit?: number): Promise<BlogPost[]> {
       });
 
       return data.items.flatMap((entry) => {
-        const f = entry.fields;
-        const title = requiredString(f.title, "title", entry.sys.id);
-        const slug = requiredString(f.slug, "slug", entry.sys.id);
-        if (!title || !slug) return [];
-
-        return [
-          {
-            title,
-            slug,
-            author: optionalString(f.author),
-            date: optionalString(f.date),
-            excerpt: optionalString(f.excerpt),
-            coverImage: resolveImage(f.coverImage, assets(data)),
-            body: f.body ?? null,
-          },
-        ];
+        const post = toBlogPost(entry, assets(data));
+        return post ? [post] : [];
       });
     },
     [],
@@ -170,24 +210,8 @@ export async function getTeam(): Promise<TeamMember[]> {
       });
 
       return data.items.flatMap((entry) => {
-        const f = entry.fields;
-        const name = requiredString(f.name, "name", entry.sys.id);
-        const designation = requiredString(
-          f.designation,
-          "designation",
-          entry.sys.id,
-        );
-        if (!name || !designation) return [];
-
-        return [
-          {
-            id: entry.sys.id,
-            name,
-            designation,
-            bio: optionalString(f.bio),
-            photo: resolveImage(f.photo, assets(data)),
-          },
-        ];
+        const member = toTeamMember(entry, assets(data));
+        return member ? [member] : [];
       });
     },
     [],
@@ -271,19 +295,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       const entry = data.items[0];
       if (!entry) return null;
 
-      const f = entry.fields;
-      const title = requiredString(f.title, "title", entry.sys.id);
-      if (!title) return null;
-
-      return {
-        title,
-        slug,
-        author: optionalString(f.author),
-        date: optionalString(f.date),
-        excerpt: optionalString(f.excerpt),
-        coverImage: resolveImage(f.coverImage, assets(data)),
-        body: f.body ?? null,
-      };
+      return toBlogPost(entry, assets(data));
     },
     null,
   );
@@ -303,22 +315,7 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
       const entry = data.items[0];
       if (!entry) return null;
 
-      const f = entry.fields;
-      const name = requiredString(f.name, "name", entry.sys.id);
-      const designation = requiredString(
-        f.designation,
-        "designation",
-        entry.sys.id,
-      );
-      if (!name || !designation) return null;
-
-      return {
-        id: entry.sys.id,
-        name,
-        designation,
-        bio: optionalString(f.bio),
-        photo: resolveImage(f.photo, assets(data)),
-      };
+      return toTeamMember(entry, assets(data));
     },
     null,
   );

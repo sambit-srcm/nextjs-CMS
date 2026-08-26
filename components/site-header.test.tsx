@@ -71,6 +71,31 @@ describe("SiteHeader", () => {
     expect(html).not.toContain('id="mobile-nav"');
   });
 
+  it("renders the CMS logo beside the wordmark", () => {
+    usePathname.mockReturnValue("/");
+    const html = render(
+      <SiteHeader
+        siteName="Circuit"
+        siteTagline="Phones & Tech"
+        logo={{ url: "https://images.test/logo.jpg", alt: "" }}
+      />,
+    );
+
+    expect(html).toContain("logo.jpg");
+    // Decorative: the wordmark next to it already names the site, and the
+    // link would otherwise be announced twice.
+    expect(html).toContain('alt=""');
+    expect(text(html)).toContain("Circuit");
+  });
+
+  it("falls back to the wordmark alone when no logo is set", () => {
+    usePathname.mockReturnValue("/");
+    const html = header();
+
+    expect(html).not.toContain("<img");
+    expect(text(html)).toContain("Circuit");
+  });
+
   it("ships the theme toggle in the header", () => {
     usePathname.mockReturnValue("/");
 

@@ -15,6 +15,7 @@ export type PageContentFields = {
 };
 
 export type SiteSettingsFields = {
+  logo: AssetLink;
   siteName: string;
   siteTagline: string;
   footerTagline: string;
@@ -84,6 +85,8 @@ export type PageContent = {
 };
 
 export type SiteSettings = {
+  /** Brand mark shown in the header. Null until an editor uploads one. */
+  logo: CmsImage | null;
   siteName: string;
   siteTagline: string;
   footerTagline: string;
@@ -105,6 +108,9 @@ export type BlogPost = {
   coverImage: CmsImage | null;
   body: Document | null;
 };
+
+/** A post as the listing renders it: everything but the article body. */
+export type BlogPostListing = Omit<BlogPost, "body">;
 
 export type Service = {
   title: string;

@@ -1,8 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+
+import type { CmsImage } from "@/lib/cms/types";
 
 import { isActive, NAV_LINKS } from "./site-nav";
 import { ThemeToggle } from "./theme-toggle";
@@ -16,9 +19,12 @@ import { ThemeToggle } from "./theme-toggle";
 export function SiteHeader({
   siteName,
   siteTagline,
+  logo,
 }: {
   siteName: string;
   siteTagline: string;
+  /** Brand mark from the CMS. The wordmark alone is used when absent. */
+  logo?: CmsImage | null;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -31,6 +37,18 @@ export function SiteHeader({
           onClick={() => setOpen(false)}
           className="flex items-baseline gap-2.5"
         >
+          {logo && (
+            <Image
+              src={logo.url}
+              alt=""
+              width={28}
+              height={28}
+              // Rounded because the mark ships with its own solid background;
+              // a bare square would sit awkwardly against the header surface.
+              className="rounded-md"
+              priority
+            />
+          )}
           <span className="text-lg font-semibold tracking-tight text-ink">
             {siteName}
           </span>
