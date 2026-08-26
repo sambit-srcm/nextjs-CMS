@@ -31,6 +31,23 @@ describe("ArticleList", () => {
     expect(html).toContain('href="/blog/pixel"');
   });
 
+  it("paints the full list from the server without fetching", () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const html = render(
+      <ArticleList posts={[aPost(), aPost({ slug: "b" })]} />,
+    );
+
+    // fallbackData seeds SWR with the prerendered list, so the first paint
+    // carries every article and issues no request for data the page already
+    // holds. Losing this would mean shipping an empty list that fills in.
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(text(html)).toContain("Pixel 10 Pro review");
+
+    vi.unstubAllGlobals();
+  });
+
   it("offers a labelled search box and an unfiltered count", () => {
     const html = render(
       <ArticleList posts={[aPost(), aPost({ slug: "b" })]} />,

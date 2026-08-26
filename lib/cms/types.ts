@@ -109,6 +109,9 @@ export type BlogPost = {
   body: Document | null;
 };
 
+/** A post as the listing renders it: everything but the article body. */
+export type BlogPostListing = Omit<BlogPost, "body">;
+
 export type Service = {
   title: string;
   description: string;
