@@ -1,4 +1,5 @@
-import type { BlogPost } from "@/lib/cms/types";
+/** The fields the search reads. Anything carrying these can be filtered. */
+type Searchable = { title: string; excerpt: string; author: string };
 
 /**
  * Narrows a list of articles by a free-text query.
@@ -8,8 +9,14 @@ import type { BlogPost } from "@/lib/cms/types";
  * way a single-substring test would. Matching is case-insensitive.
  *
  * An empty or whitespace-only query returns the list untouched.
+ *
+ * Generic over the item so it serves both the full post and the trimmed
+ * listing shape the blog page polls, without either needing a second copy.
  */
-export function filterPosts(posts: BlogPost[], query: string): BlogPost[] {
+export function filterPosts<T extends Searchable>(
+  posts: T[],
+  query: string,
+): T[] {
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
   if (terms.length === 0) return posts;
 

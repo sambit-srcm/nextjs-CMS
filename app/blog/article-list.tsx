@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import useSWR from "swr";
 
 import { formatDate } from "@/components/format";
-import type { BlogPost } from "@/lib/cms/types";
+import type { BlogPostListing } from "@/lib/cms/types";
 import { filterPosts } from "@/lib/filter-posts";
 
 /*
@@ -13,10 +14,34 @@ import { filterPosts } from "@/lib/filter-posts";
  * keystroke would add latency for a result the browser already holds.
  */
 
-export function ArticleList({ posts }: { posts: BlogPost[] }) {
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+export function ArticleList({ posts }: { posts: BlogPostListing[] }) {
   const [query, setQuery] = useState("");
 
-  const visible = useMemo(() => filterPosts(posts, query), [posts, query]);
+  /*
+   * ISR keeps the server's HTML fresh for the next visitor; it cannot reach a
+   * tab that is already open. SWR closes that gap: a reader who left this page
+   * open sees a newly published article when they return to the tab, rather
+   * than only after a reload.
+   *
+   * `fallbackData` seeds the cache with the server-rendered list, so the first
+   * paint is identical to the prerendered markup — no spinner, no layout
+   * shift, and a crawler sees every article. `revalidateOnMount: false` is
+   * what keeps that free: SWR revalidates on mount even when fallbackData is
+   * supplied, which would refetch data the page has just embedded in its HTML.
+   */
+  const { data } = useSWR<BlogPostListing[]>("/api/posts", fetcher, {
+    fallbackData: posts,
+    revalidateOnMount: false,
+    refreshInterval: 60_000,
+  });
+
+  // A failed background refresh is not worth surfacing: the reader still has a
+  // valid list on screen, so the last good data keeps rendering.
+  const current = data ?? posts;
+
+  const visible = useMemo(() => filterPosts(current, query), [current, query]);
 
   return (
     <>
@@ -38,10 +63,10 @@ export function ArticleList({ posts }: { posts: BlogPost[] }) {
           being interrupted on every keystroke. */}
       <p aria-live="polite" className="mt-3 text-xs text-ink-muted">
         {query.trim()
-          ? `${visible.length} of ${posts.length} ${
-              posts.length === 1 ? "article" : "articles"
+          ? `${visible.length} of ${current.length} ${
+              current.length === 1 ? "article" : "articles"
             }`
-          : `${posts.length} ${posts.length === 1 ? "article" : "articles"}`}
+          : `${current.length} ${current.length === 1 ? "article" : "articles"}`}
       </p>
 
       {visible.length === 0 ? (
