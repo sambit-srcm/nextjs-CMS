@@ -88,6 +88,28 @@ describe("SiteHeader", () => {
     expect(text(html)).toContain("Circuit");
   });
 
+  it("centres the logo against the text rather than baselining it", () => {
+    usePathname.mockReturnValue("/");
+    const html = render(
+      <SiteHeader
+        siteName="Circuit"
+        siteTagline="Phones & Tech"
+        logo={{ url: "https://images.test/logo.jpg", alt: "" }}
+      />,
+    );
+
+    const brand = html.slice(html.indexOf('href="/"') - 200);
+
+    // An image has no text baseline — its baseline is its bottom edge — so a
+    // baseline container hangs the mark off the text instead of levelling it.
+    // The logo sits in a centred row; only the two text spans share a baseline.
+    expect(brand).toContain("flex items-center gap-2.5");
+    expect(brand).toContain("flex items-baseline gap-2.5");
+    const logoAt = brand.indexOf("<img");
+    const baselineAt = brand.indexOf("items-baseline");
+    expect(logoAt).toBeLessThan(baselineAt);
+  });
+
   it("falls back to the wordmark alone when no logo is set", () => {
     usePathname.mockReturnValue("/");
     const html = header();
