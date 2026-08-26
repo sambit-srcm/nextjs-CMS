@@ -1,56 +1,42 @@
-import Link from "next/link";
+import { getPageContent, getPosts } from "@/lib/cms/queries";
 
-import { getPosts } from "@/lib/cms/queries";
+import { ArticleList } from "./article-list";
 
-// The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
-// does not apply. Revalidation has to be declared at the segment level.
 export const revalidate = 60;
 
 export default async function Blog() {
-  const posts = await getPosts();
+  const [copy, posts] = await Promise.all([
+    getPageContent("page-blog"),
+    getPosts(),
+  ]);
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <section className="flex flex-col items-center gap-4 px-6 py-24 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">
-          Blog
+    <div className="flex flex-1 flex-col">
+      <section className="mx-auto w-full max-w-4xl px-6 pt-20 pb-6 sm:pt-28">
+        {copy?.eyebrow && (
+          <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+            {copy.eyebrow}
+          </p>
+        )}
+        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          {copy?.heading}
         </h1>
+        {copy?.intro && (
+          <p className="mt-5 max-w-xl text-lg leading-8 text-ink-muted">
+            {copy.intro}
+          </p>
+        )}
       </section>
 
-      <section className="mx-auto w-full max-w-3xl px-6 py-16">
+      <section className="mx-auto w-full max-w-4xl px-6 pb-8">
         {posts.length === 0 ? (
-          <p className="text-center text-sm text-zinc-500 dark:text-zinc-500">
-            No posts have been published yet. Please check back shortly.
+          <p className="text-sm text-ink-muted">
+            No articles have been published yet. Please check back shortly.
           </p>
         ) : (
-          <div className="flex flex-col gap-6">
-            {posts.map((post) => (
-              <article
-                key={post.slug}
-                className="relative rounded-lg border border-zinc-200 bg-white p-6 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
-              >
-                <h2 className="text-lg font-medium text-zinc-950 dark:text-zinc-50">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="after:absolute after:inset-0 hover:underline"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
-                  {post.author} &middot;{" "}
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-                  {post.excerpt}
-                </p>
-              </article>
-            ))}
-          </div>
+          /* The list is fetched on the server and filtered on the client, so
+             the page still prerenders with every article in the markup. */
+          <ArticleList posts={posts} />
         )}
       </section>
     </div>

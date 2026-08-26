@@ -2,8 +2,6 @@ import { getContactPage } from "@/lib/cms/queries";
 
 import { ContactForm } from "./contact-form";
 
-// The Contentful SDK runs on axios rather than fetch, so Next's fetch cache
-// does not apply. Revalidation has to be declared at the segment level.
 export const revalidate = 60;
 
 export default async function Contact() {
@@ -11,12 +9,12 @@ export default async function Contact() {
 
   if (!copy) {
     return (
-      <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-        <section className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
-          <h1 className="text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">
-            Contact us
+      <div className="flex flex-1 flex-col">
+        <section className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-6 py-28 text-center">
+          <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+            Contact
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">
+          <p className="mt-4 text-sm text-ink-muted">
             This page is temporarily unavailable. Please try again shortly.
           </p>
         </section>
@@ -25,25 +23,28 @@ export default async function Contact() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <section className="flex flex-col items-center gap-4 px-6 py-24 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">
+    <div className="flex flex-1 flex-col">
+      <section className="mx-auto w-full max-w-2xl px-6 pt-20 pb-6 sm:pt-28">
+        <p className="text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase">
+          Contact
+        </p>
+        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
           {copy.heading}
         </h1>
         {copy.intro && (
-          <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
-            {copy.intro}
-          </p>
+          <p className="mt-5 text-lg leading-8 text-ink-muted">{copy.intro}</p>
         )}
       </section>
 
-      <section className="mx-auto w-full max-w-md px-6 py-16">
-        <ContactForm
-          submitLabel={copy.submitLabel}
-          submittingLabel={copy.submittingLabel}
-          successMessage={copy.successMessage}
-          errorMessage={copy.errorMessage}
-        />
+      <section className="mx-auto w-full max-w-2xl px-6 pb-8">
+        <div className="rounded-2xl border border-line bg-surface p-7 sm:p-9">
+          <ContactForm
+            submitLabel={copy.submitLabel}
+            submittingLabel={copy.submittingLabel}
+            successMessage={copy.successMessage}
+            errorMessage={copy.errorMessage}
+          />
+        </div>
       </section>
     </div>
   );

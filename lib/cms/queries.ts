@@ -9,6 +9,8 @@ import type {
   ContactPageCopy,
   ContactPageFields,
   CmsImage,
+  PageContent,
+  PageContentFields,
   Service,
   ServiceFields,
   SiteSettings,
@@ -69,6 +71,10 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     if (!bannerTitle) return null;
 
     return {
+      siteName: optionalString(f.siteName),
+      siteTagline: optionalString(f.siteTagline),
+      footerTagline: optionalString(f.footerTagline),
+      metaDescription: optionalString(f.metaDescription),
       bannerTitle,
       bannerSubtitle: optionalString(f.bannerSubtitle),
       missionTitle: optionalString(f.missionTitle),
@@ -107,10 +113,11 @@ export async function getPosts(limit?: number): Promise<BlogPost[]> {
   }, []);
 }
 
-export async function getServices(): Promise<Service[]> {
+export async function getServices(limit?: number): Promise<Service[]> {
   return withFallback("getServices", async () => {
     const data = await fetchEntries<ServiceFields>("service", {
       order: "fields.order",
+      ...(limit ? { limit } : {}),
     });
 
     return data.items.flatMap((entry) => {
@@ -145,6 +152,7 @@ export async function getTeam(): Promise<TeamMember[]> {
 
       return [
         {
+          id: entry.sys.id,
           name,
           designation,
           bio: optionalString(f.bio),
@@ -234,6 +242,64 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       excerpt: optionalString(f.excerpt),
       coverImage: resolveImage(f.coverImage, assets(data), title),
       body: f.body ?? null,
+    };
+  }, null);
+}
+
+export async function getTeamMember(id: string): Promise<TeamMember | null> {
+  return withFallback(`getTeamMember(${id})`, async () => {
+    // Filtered server-side by entry id rather than fetching the whole team and
+    // finding one, so the request stays proportional to what is rendered.
+    const data = await fetchEntries<TeamMemberFields>("teamMember", {
+      "sys.id": id,
+      limit: 1,
+    });
+
+    const entry = data.items[0];
+    if (!entry) return null;
+
+    const f = entry.fields;
+    const name = requiredString(f.name, "name", entry.sys.id);
+    const designation = requiredString(f.designation, "designation", entry.sys.id);
+    if (!name || !designation) return null;
+
+    return {
+      id: entry.sys.id,
+      name,
+      designation,
+      bio: optionalString(f.bio),
+      photo: resolveImage(f.photo, assets(data), name),
+    };
+  }, null);
+}
+
+/**
+ * Masthead copy for a single route, keyed by a readable entry id such as
+ * `page-blog`. Returns null when the entry is absent so the caller can fall
+ * back rather than render empty headings.
+ */
+export async function getPageContent(id: string): Promise<PageContent | null> {
+  return withFallback(`getPageContent(${id})`, async () => {
+    const data = await fetchEntries<PageContentFields>("pageContent", {
+      "sys.id": id,
+      limit: 1,
+    });
+
+    const entry = data.items[0];
+    if (!entry) {
+      console.warn(`No pageContent entry "${id}" published in Contentful.`);
+      return null;
+    }
+
+    const f = entry.fields;
+    return {
+      eyebrow: optionalString(f.eyebrow),
+      heading: optionalString(f.heading),
+      intro: optionalString(f.intro),
+      primaryCtaLabel: optionalString(f.primaryCtaLabel),
+      secondaryCtaLabel: optionalString(f.secondaryCtaLabel),
+      sectionOneHeading: optionalString(f.sectionOneHeading),
+      sectionTwoHeading: optionalString(f.sectionTwoHeading),
     };
   }, null);
 }

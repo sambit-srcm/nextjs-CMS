@@ -1,8 +1,9 @@
-# Remo
+# Circuit
 
-Company website built with Next.js and Contentful. All page content —
-banner copy, services, team, blog posts and contact wording — is managed in
-Contentful rather than hardcoded in the components.
+Phone reviews and launch coverage across Android and iOS, built with Next.js
+and Contentful. All page content — banner copy, services, team, articles and
+contact wording — is managed in Contentful rather than hardcoded in the
+components.
 
 ## Stack
 
@@ -79,6 +80,27 @@ at startup, so a deployment without it still builds and serves every page — on
 the contact form fails, and it fails with a generic message while the reason
 goes to the server log.
 
+**Input validation** lives in `lib/validation/`, defined as Zod schemas. The
+schema is the single source of truth: the request type is inferred from it, and
+it carries no `server-only` import so the same definition can validate on the
+client without a second copy that can drift.
+
+**Tests** run on Vitest (`npm test`; `npm run test:coverage` for the report).
+They cover the validation schema, both route handlers, the CMS query layer, and
+every page and component — including the paths that are awkward to exercise by
+hand, such as a failed CMS write degrading correctly, error responses not
+leaking the upstream reason, and each page's empty state when the CMS returns
+nothing.
+
+Pages are rendered with `react-dom/server`: a Server Component is an async
+function returning an element tree, so it can be awaited and rendered in plain
+Node with the query layer mocked. Client Components render their first frame
+the same way. Event handlers and effects do not run under that renderer, so the
+few behaviours that need a real DOM — submitting the contact form, opening the
+mobile menu, typing in the article filter — are left uncovered rather than
+faked. Coverage counts pages and components in its denominator; excluding them
+would report a percentage over the data layer alone.
+
 **Loading and error states** use the App Router's file conventions.
 `app/loading.tsx` is the streaming fallback, `app/error.tsx` the route-level
 error boundary, and `app/not-found.tsx` replaces the unstyled 404. Because
@@ -117,6 +139,8 @@ unauthenticated requests.
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
+| `npm test` | Run the test suite once |
+| `npm run test:watch` | Run tests in watch mode |
 
 ## Deployment
 

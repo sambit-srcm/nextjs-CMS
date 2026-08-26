@@ -4,7 +4,21 @@ import type { Document } from "@contentful/rich-text-types";
 
 import type { AssetLink } from "./client";
 
+export type PageContentFields = {
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  sectionOneHeading: string;
+  sectionTwoHeading: string;
+};
+
 export type SiteSettingsFields = {
+  siteName: string;
+  siteTagline: string;
+  footerTagline: string;
+  metaDescription: string;
   bannerTitle: string;
   bannerSubtitle: string;
   missionTitle: string;
@@ -57,7 +71,23 @@ export type CmsImage = {
   height?: number;
 };
 
+/** Masthead copy for one route. Every field is optional so a page still
+ *  renders if an editor has not filled it in. */
+export type PageContent = {
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  sectionOneHeading: string;
+  sectionTwoHeading: string;
+};
+
 export type SiteSettings = {
+  siteName: string;
+  siteTagline: string;
+  footerTagline: string;
+  metaDescription: string;
   bannerTitle: string;
   bannerSubtitle: string;
   missionTitle: string;
@@ -84,6 +114,8 @@ export type Service = {
 };
 
 export type TeamMember = {
+  /** The Contentful entry id, which is also the detail page segment. */
+  id: string;
   name: string;
   designation: string;
   bio: string;

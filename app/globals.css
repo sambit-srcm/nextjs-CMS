@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens. Every colour in the app resolves through one of these, so a
+ * palette change is a change to this file rather than to every component.
+ *
+ * Dark is the default: the design was built around the aubergine treatment,
+ * and a visitor who has expressed no preference should see it. The inline
+ * script in the root layout applies a stored choice before first paint.
+ */
+:root,
+:root[data-theme="dark"] {
+  --canvas: #0e0817;
+  --surface: #171029;
+  --surface-raised: #1e1436;
+  --line: #2c2044;
+  --ink: #f4f0fb;
+  --ink-muted: #a99cc4;
+  --accent: #a855f7;
+  /* Hover target. Lighter than --accent here; darker in the light theme, so
+     both directions read as "more emphasis" against their own background. */
+  --accent-strong: #c084fc;
+  --accent-ink: #12081f;
+  --accent-soft: #241539;
+
+  color-scheme: dark;
+}
+
+/*
+ * The same violet identity carried onto a light ground, rather than a
+ * different palette. The accent darkens because it now sits on white and has
+ * to hold contrast against it.
+ */
+:root[data-theme="light"] {
+  --canvas: #faf8fd;
+  --surface: #ffffff;
+  --surface-raised: #f5effd;
+  --line: #e6dbf6;
+  --ink: #1b1229;
+  --ink-muted: #5f5478;
+  --accent: #7c3aed;
+  --accent-strong: #6b21d4;
+  --accent-ink: #ffffff;
+  --accent-soft: #f2e9fe;
+
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  /* Previously hardcoded to Arial, which overrode the Geist fonts the root
+     layout loads and exposes as CSS variables. */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Keeps multi-line headings from leaving a single orphaned word. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/*
+ * Which toggle icon shows is decided in CSS rather than from React state, so
+ * the correct one is painted with the very first frame. Deriving it from state
+ * would mean either a hydration mismatch or a visible flip after hydration.
+ */
+[data-theme="dark"] .theme-icon-light {
+  display: none;
+}
+
+[data-theme="light"] .theme-icon-dark {
+  display: none;
 }

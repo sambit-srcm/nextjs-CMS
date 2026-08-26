@@ -51,7 +51,7 @@ export function ContactForm({
       <div className="flex flex-col gap-1">
         <label
           htmlFor="name"
-          className="text-sm font-medium text-zinc-950 dark:text-zinc-50"
+          className="text-sm font-medium text-ink"
         >
           Name
         </label>
@@ -60,14 +60,14 @@ export function ContactForm({
           name="name"
           type="text"
           required
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+          className="rounded-lg border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink transition-colors outline-none placeholder:text-ink-muted focus:border-accent"
         />
       </div>
 
       <div className="flex flex-col gap-1">
         <label
           htmlFor="email"
-          className="text-sm font-medium text-zinc-950 dark:text-zinc-50"
+          className="text-sm font-medium text-ink"
         >
           Email
         </label>
@@ -76,14 +76,14 @@ export function ContactForm({
           name="email"
           type="email"
           required
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+          className="rounded-lg border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink transition-colors outline-none placeholder:text-ink-muted focus:border-accent"
         />
       </div>
 
       <div className="flex flex-col gap-1">
         <label
           htmlFor="message"
-          className="text-sm font-medium text-zinc-950 dark:text-zinc-50"
+          className="text-sm font-medium text-ink"
         >
           Message
         </label>
@@ -92,25 +92,25 @@ export function ContactForm({
           name="message"
           rows={5}
           required
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+          className="rounded-lg border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink transition-colors outline-none placeholder:text-ink-muted focus:border-accent"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-2 rounded-md bg-zinc-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200"
+        className="mt-3 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong disabled:opacity-50"
       >
         {status === "submitting" ? submittingLabel : submitLabel}
       </button>
 
       {status === "success" && (
-        <p className="text-sm text-green-600 dark:text-green-400">
+        <p className="text-sm text-accent-strong">
           {successMessage}
         </p>
       )}
       {status === "error" && (
-        <p className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
+        <p className="text-sm text-red-400">{errorMessage}</p>
       )}
     </form>
   );
