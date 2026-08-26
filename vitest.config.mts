@@ -9,18 +9,17 @@ const root = import.meta.dirname;
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["**/*.test.ts"],
+    include: ["**/*.test.ts", "**/*.test.tsx"],
     setupFiles: ["test/setup.ts"],
     coverage: {
       provider: "v8",
       // Everything matching `include` is reported, tested or not, so an
       // untested module shows as 0% rather than vanishing from the total.
-      include: ["lib/**", "app/api/**", "components/**"],
-      // Route and page components are React Server Components; exercising them
-      // needs a rendering harness rather than a unit test, so they are measured
-      // through the query and validation layers they delegate to.
-      // Types compile away, and .tsx here is React chrome rather than logic.
-      exclude: ["**/*.test.ts", "**/*.d.ts", "**/types.ts", "**/*.tsx"],
+      include: ["lib/**", "app/**", "components/**"],
+      // Pages and components are in scope: excluding them would report a
+      // percentage over the data layer alone, which flatters the number.
+      // Only type declarations are dropped, since they compile away.
+      exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.d.ts", "**/types.ts"],
       reporter: ["text", "html"],
       thresholds: {
         statements: 90,
