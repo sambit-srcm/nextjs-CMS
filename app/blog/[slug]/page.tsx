@@ -30,6 +30,7 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -45,9 +46,7 @@ export async function generateMetadata({
 const renderOptions: Options = {
   renderMark: {
     [MARKS.BOLD]: (text) => (
-      <strong className="font-medium text-ink">
-        {text}
-      </strong>
+      <strong className="font-medium text-ink">{text}</strong>
     ),
     [MARKS.CODE]: (text) => (
       <code className="rounded bg-accent-soft px-1.5 py-0.5 font-mono text-[0.9em] text-accent-strong">
@@ -67,9 +66,7 @@ const renderOptions: Options = {
       </h2>
     ),
     [BLOCKS.HEADING_3]: (_node, children) => (
-      <h3 className="mt-10 text-lg font-medium text-ink">
-        {children}
-      </h3>
+      <h3 className="mt-10 text-lg font-medium text-ink">{children}</h3>
     ),
     [BLOCKS.UL_LIST]: (_node, children) => (
       <ul className="mt-5 list-disc space-y-2 pl-6 text-[1.0625rem] leading-8 text-ink-muted marker:text-accent">
@@ -133,7 +130,8 @@ export default async function Article({ params }: PageProps<"/blog/[slug]">) {
         {post.coverImage && (
           <Image
             src={post.coverImage.url}
-            alt={post.coverImage.alt}
+            // Decorative: it illustrates the headline above it.
+            alt=""
             width={post.coverImage.width ?? 1200}
             height={post.coverImage.height ?? 630}
             className="mt-10 w-full rounded-xl object-cover"

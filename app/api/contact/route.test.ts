@@ -55,7 +55,9 @@ describe("POST /api/contact", () => {
     const res = await POST(post(null, "not-json"));
 
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toEqual({ error: "Invalid request body." });
+    await expect(res.json()).resolves.toEqual({
+      error: "Invalid request body.",
+    });
     expect(createContactSubmission).not.toHaveBeenCalled();
   });
 

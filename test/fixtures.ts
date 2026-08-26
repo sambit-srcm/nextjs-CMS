@@ -25,7 +25,9 @@ export const aPageContent = (over: Partial<PageContent> = {}): PageContent => ({
   ...over,
 });
 
-export const aSiteSettings = (over: Partial<SiteSettings> = {}): SiteSettings => ({
+export const aSiteSettings = (
+  over: Partial<SiteSettings> = {},
+): SiteSettings => ({
   siteName: "Circuit",
   siteTagline: "Phones & Tech",
   footerTagline: "Independent phone reviews.",
@@ -90,8 +92,18 @@ export const aRichTextBody = (): Document =>
         data: {},
         content: [
           { nodeType: "text", value: "Plain text. ", marks: [], data: {} },
-          { nodeType: "text", value: "Bold text", marks: [{ type: "bold" }], data: {} },
-          { nodeType: "text", value: "inline()", marks: [{ type: "code" }], data: {} },
+          {
+            nodeType: "text",
+            value: "Bold text",
+            marks: [{ type: "bold" }],
+            data: {},
+          },
+          {
+            nodeType: "text",
+            value: "inline()",
+            marks: [{ type: "code" }],
+            data: {},
+          },
         ],
       },
       {
@@ -116,7 +128,12 @@ export const aRichTextBody = (): Document =>
                 nodeType: "paragraph",
                 data: {},
                 content: [
-                  { nodeType: "text", value: "Bright panel", marks: [], data: {} },
+                  {
+                    nodeType: "text",
+                    value: "Bright panel",
+                    marks: [],
+                    data: {},
+                  },
                 ],
               },
             ],
@@ -131,7 +148,12 @@ export const aRichTextBody = (): Document =>
             nodeType: "paragraph",
             data: {},
             content: [
-              { nodeType: "text", value: "Best in class.", marks: [], data: {} },
+              {
+                nodeType: "text",
+                value: "Best in class.",
+                marks: [],
+                data: {},
+              },
             ],
           },
         ],

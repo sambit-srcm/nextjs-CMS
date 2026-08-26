@@ -8,7 +8,9 @@ import { NAV_LINKS } from "./site-nav";
 describe("SiteFooter", () => {
   it("renders the brand strings it is given", () => {
     const body = text(
-      render(<SiteFooter siteName="Circuit" footerTagline="Independent reviews." />),
+      render(
+        <SiteFooter siteName="Circuit" footerTagline="Independent reviews." />,
+      ),
     );
 
     expect(body).toContain("Circuit");

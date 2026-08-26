@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { getContactPage } from "@/lib/cms/queries";
 
 import { ContactForm } from "./contact-form";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
+};
 
 export default async function Contact() {
   const copy = await getContactPage();

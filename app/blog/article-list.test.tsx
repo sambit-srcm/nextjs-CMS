@@ -32,7 +32,9 @@ describe("ArticleList", () => {
   });
 
   it("offers a labelled search box and an unfiltered count", () => {
-    const html = render(<ArticleList posts={[aPost(), aPost({ slug: "b" })]} />);
+    const html = render(
+      <ArticleList posts={[aPost(), aPost({ slug: "b" })]} />,
+    );
 
     expect(html).toContain('id="article-search"');
     expect(text(html)).toContain("Search articles");

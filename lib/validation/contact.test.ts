@@ -55,9 +55,9 @@ describe("contactSubmissionSchema", () => {
       "first.last@sub.domain.example",
       "a@b.co",
     ]) {
-      expect(contactSubmissionSchema.safeParse({ ...valid, email }).success).toBe(
-        true,
-      );
+      expect(
+        contactSubmissionSchema.safeParse({ ...valid, email }).success,
+      ).toBe(true);
     }
   });
 

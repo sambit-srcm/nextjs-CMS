@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
 import { getPageContent, getSiteSettings, getTeam } from "@/lib/cms/queries";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
+};
 
 function initials(name: string) {
   return name
@@ -74,7 +79,10 @@ export default async function About() {
                 {member.photo ? (
                   <Image
                     src={member.photo.url}
-                    alt={member.photo.alt}
+                    // Decorative: the writer's name is the heading directly
+                    // below, so alt text here would either repeat it or, as
+                    // happened with stale CMS descriptions, contradict it.
+                    alt=""
                     width={56}
                     height={56}
                     className="h-14 w-14 rounded-full object-cover"

@@ -16,8 +16,18 @@ const post = (over: Partial<BlogPost>): BlogPost => ({
 
 const posts = [
   post({}),
-  post({ title: "iPhone 18 Pro", slug: "iphone", author: "Marcus Feld", excerpt: "Three weeks in." }),
-  post({ title: "MWC 2026 preview", slug: "mwc", author: "Priya Raman", excerpt: "Foldables move down-market." }),
+  post({
+    title: "iPhone 18 Pro",
+    slug: "iphone",
+    author: "Marcus Feld",
+    excerpt: "Three weeks in.",
+  }),
+  post({
+    title: "MWC 2026 preview",
+    slug: "mwc",
+    author: "Priya Raman",
+    excerpt: "Foldables move down-market.",
+  }),
 ];
 
 describe("filterPosts", () => {

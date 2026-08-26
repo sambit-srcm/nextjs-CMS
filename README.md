@@ -26,13 +26,14 @@ Open [http://localhost:3000](http://localhost:3000).
 Copy `.env.example` to `.env.local` and fill it in. None of these are prefixed
 with `NEXT_PUBLIC_`, so they stay server-side and never reach the browser.
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `CONTENTFUL_SPACE_ID` | yes | Space to read from |
-| `CONTENTFUL_DELIVERY_TOKEN` | yes | Content Delivery API token (read-only) |
-| `CONTENTFUL_ENVIRONMENT` | no | Defaults to `master` |
-| `CONTENTFUL_REVALIDATE_SECRET` | no | Shared secret for the publish webhook below |
-| `CONTENTFUL_MANAGEMENT_TOKEN` | no | Write token, used only by the contact form endpoint |
+| Variable                       | Required | Purpose                                                             |
+| ------------------------------ | -------- | ------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`         | no       | Public origin, used for canonical links, robots.txt and the sitemap |
+| `CONTENTFUL_SPACE_ID`          | yes      | Space to read from                                                  |
+| `CONTENTFUL_DELIVERY_TOKEN`    | yes      | Content Delivery API token (read-only)                              |
+| `CONTENTFUL_ENVIRONMENT`       | no       | Defaults to `master`                                                |
+| `CONTENTFUL_REVALIDATE_SECRET` | no       | Shared secret for the publish webhook below                         |
+| `CONTENTFUL_MANAGEMENT_TOKEN`  | no       | Write token, used only by the contact form endpoint                 |
 
 Find these under **Settings → API keys** in Contentful.
 
@@ -43,14 +44,14 @@ than surfacing later as an authentication failure from the API.
 
 Managed in Contentful. The site reads these types:
 
-| Type | Backs |
-| --- | --- |
-| `siteSettings` | Homepage banner, plus mission and vision on About |
-| `service` | Services page and the services section on the homepage |
-| `teamMember` | Team section on About |
-| `blogPost` | Blog page and the teaser on the homepage |
-| `contactPage` | Editable copy on Contact |
-| `contactSubmission` | Messages sent through the contact form |
+| Type                | Backs                                                  |
+| ------------------- | ------------------------------------------------------ |
+| `siteSettings`      | Homepage banner, plus mission and vision on About      |
+| `service`           | Services page and the services section on the homepage |
+| `teamMember`        | Team section on About                                  |
+| `blogPost`          | Blog page and the teaser on the homepage               |
+| `contactPage`       | Editable copy on Contact                               |
+| `contactSubmission` | Messages sent through the contact form                 |
 
 `siteSettings` and `contactPage` are singletons **by convention** — Contentful
 has no built-in singleton concept, so exactly one entry of each is expected and
@@ -133,14 +134,59 @@ unauthenticated requests.
 
 ## Scripts
 
-| Command | Does |
-| --- | --- |
-| `npm run dev` | Start the dev server |
-| `npm run build` | Production build |
-| `npm run start` | Serve the production build |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run the test suite once |
-| `npm run test:watch` | Run tests in watch mode |
+| Command              | Does                       |
+| -------------------- | -------------------------- |
+| `npm run dev`        | Start the dev server       |
+| `npm run build`      | Production build           |
+| `npm run start`      | Serve the production build |
+| `npm run lint`       | Run ESLint                 |
+| `npm test`           | Run the test suite once    |
+| `npm run test:watch` | Run tests in watch mode    |
+
+## Quality checks
+
+| Command                 | Does                                                   |
+| ----------------------- | ------------------------------------------------------ |
+| `npm run lint`          | ESLint, with the formatting rules deferred to Prettier |
+| `npm run format`        | Rewrite files to Prettier's style                      |
+| `npm run format:check`  | Fail if anything is unformatted                        |
+| `npm run test:coverage` | Tests plus the 90% coverage thresholds                 |
+
+**Git hooks** are managed by Husky and installed by `npm install`. `pre-commit`
+runs the formatter check and ESLint; `commit-msg` runs commitlint. To bypass one
+in an emergency, `git commit --no-verify` — CI still enforces the same checks.
+
+**Commit messages** follow Conventional Commits, with two house rules on top of
+`@commitlint/config-conventional`: a body and a footer are both required, and
+sentence-case subjects are allowed where the shipped config forbids them. The
+rules and the reasoning are in `commitlint.config.mjs`.
+
+**Secret scanning** uses Gitleaks. The pre-commit hook scans staged changes when
+the binary is present (`brew install gitleaks`) and skips with a notice when it
+is not, so a missing tool warns rather than blocks. CI scans the full history of
+every pull request and has no such escape hatch.
+
+**CI** runs on every pull request and on pushes to `main` and `development`, in
+three jobs: lint, format, tests and build; commit message validation across the
+pull request's commits; and the secret scan. The build runs with placeholder
+Contentful credentials — every query degrades to an empty result when the CMS is
+unreachable, so the build still exercises the real code path and still fails on a
+genuine compile or prerender error, without a token in CI.
+
+### Requiring review
+
+`.github/CODEOWNERS` names the reviewers, but **the file on its own enforces
+nothing**. It takes effect only once the target branch has a protection rule.
+Under **Settings → Branches → Add rule** for `main` and `development`:
+
+- Require a pull request before merging
+- Require review from Code Owners
+- Require status checks to pass, selecting the CI jobs above
+
+Note that GitHub does not let anyone approve their own pull request. On a
+single-maintainer repository, enabling code owner review means every pull request
+needs a second account to approve it — add a collaborator first, or leave that
+one setting off and rely on the status checks.
 
 ## Deployment
 
@@ -155,12 +201,13 @@ autocomplete; everything else is default.
 2. Under **Environment Variables**, set each of these for **Production**
    (and Preview if you want branch deploys against the same space):
 
-   | Variable | Value |
-   | --- | --- |
-   | `CONTENTFUL_SPACE_ID` | from Contentful → Settings → API keys |
-   | `CONTENTFUL_ENVIRONMENT` | `master` |
-   | `CONTENTFUL_DELIVERY_TOKEN` | Content Delivery API token |
-   | `CONTENTFUL_REVALIDATE_SECRET` | generate a fresh secret — see below |
+   | Variable                       | Value                                                  |
+   | ------------------------------ | ------------------------------------------------------ |
+   | `NEXT_PUBLIC_SITE_URL`         | your production origin, e.g. `https://circuit.example` |
+   | `CONTENTFUL_SPACE_ID`          | from Contentful → Settings → API keys                  |
+   | `CONTENTFUL_ENVIRONMENT`       | `master`                                               |
+   | `CONTENTFUL_DELIVERY_TOKEN`    | Content Delivery API token                             |
+   | `CONTENTFUL_REVALIDATE_SECRET` | generate a fresh secret — see below                    |
 
 3. Deploy. The first build should succeed unchanged; Vercel picks up the
    Next.js preset, installs, builds, and serves.
@@ -192,4 +239,3 @@ Preview environment at the same Contentful space as Production, previews read
 the same content and the webhook affects both. Point them at a separate
 Contentful environment if you want isolated staging content — the
 `CONTENTFUL_ENVIRONMENT` variable exists exactly for this.
-

@@ -34,9 +34,7 @@ export const contactSubmissionSchema = z.object({
 export type ContactSubmissionInput = z.infer<typeof contactSubmissionSchema>;
 
 /** First error per field, in the shape the API returns to the client. */
-export type FieldErrors = Partial<
-  Record<keyof ContactSubmissionInput, string>
->;
+export type FieldErrors = Partial<Record<keyof ContactSubmissionInput, string>>;
 
 export function toFieldErrors(
   error: z.ZodError<ContactSubmissionInput>,

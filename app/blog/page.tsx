@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { getPageContent, getPosts } from "@/lib/cms/queries";
 
 import { ArticleList } from "./article-list";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/blog" },
+};
 
 export default async function Blog() {
   const [copy, posts] = await Promise.all([

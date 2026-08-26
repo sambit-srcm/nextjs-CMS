@@ -21,7 +21,8 @@ function stubDocument(current: string | null) {
   vi.stubGlobal("document", {
     documentElement: {
       getAttribute: (name: string) => attributes.get(name) ?? null,
-      setAttribute: (name: string, value: string) => attributes.set(name, value),
+      setAttribute: (name: string, value: string) =>
+        attributes.set(name, value),
     },
   });
 

@@ -5,6 +5,7 @@ import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getSiteSettings } from "@/lib/cms/queries";
+import { siteUrl } from "@/lib/site-url";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +33,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
+    // Resolves every relative `alternates.canonical` below it, and the
+    // relative image URLs in each route's Open Graph card.
+    metadataBase: new URL(siteUrl),
     title: settings?.siteName || FALLBACK.siteName,
     description: settings?.metaDescription || FALLBACK.metaDescription,
+    alternates: { canonical: "/" },
   };
 }
 
