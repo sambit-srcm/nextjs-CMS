@@ -199,10 +199,6 @@ Under **Settings → Branches → Add rule** for `main` and `development`:
 - Require review from Code Owners
 - Require status checks to pass, selecting the CI jobs above
 
-Note that GitHub does not let anyone approve their own pull request. On a
-single-maintainer repository, enabling code owner review means every pull request
-needs a second account to approve it — add a collaborator first, or leave that
-one setting off and rely on the status checks.
 
 ## Deployment
 
