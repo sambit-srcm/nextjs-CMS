@@ -150,22 +150,28 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   );
 }
 
-export async function getPosts(limit?: number): Promise<BlogPost[]> {
-  return withFallback(
-    "getPosts",
-    async () => {
-      const data = await fetchEntries<BlogPostFields>("blogPost", {
-        order: "-fields.date",
-        limit,
-      });
+/**
+ * Reads the article list, letting a Contentful failure propagate.
+ *
+ * `getPosts` below degrades to an empty list, which is the right answer for a
+ * page: the reader gets an empty state rather than a 500. It is the wrong
+ * answer wherever an empty list and a failed request have to be told apart,
+ * because the fallback makes an outage look like a CMS with no articles in it.
+ */
+export async function getPostsOrThrow(limit?: number): Promise<BlogPost[]> {
+  const data = await fetchEntries<BlogPostFields>("blogPost", {
+    order: "-fields.date",
+    limit,
+  });
 
-      return data.items.flatMap((entry) => {
-        const post = toBlogPost(entry, assets(data));
-        return post ? [post] : [];
-      });
-    },
-    [],
-  );
+  return data.items.flatMap((entry) => {
+    const post = toBlogPost(entry, assets(data));
+    return post ? [post] : [];
+  });
+}
+
+export async function getPosts(limit?: number): Promise<BlogPost[]> {
+  return withFallback("getPosts", () => getPostsOrThrow(limit), []);
 }
 
 export async function getServices(limit?: number): Promise<Service[]> {

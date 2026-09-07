@@ -5,7 +5,7 @@ import { render, text } from "@/test/render";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/blog" }));
 
-import { ArticleList } from "./article-list";
+import { ArticleList, fetchArticles } from "./article-list";
 
 /*
  * The prerendered frame is what a visitor sees before hydration and what a
@@ -73,10 +73,47 @@ describe("ArticleList", () => {
     expect(text(html)).not.toContain("·");
   });
 
-  it("shows the no-match notice when there is nothing to list", () => {
+  it("explains an empty list instead of offering a search box", () => {
     const html = render(<ArticleList posts={[]} />);
 
-    expect(text(html)).toContain("Nothing matches");
+    // Not the no-match notice. With no query typed that renders as a pair of
+    // empty quotes, which is what an empty list showed once a background
+    // refresh could empty it.
+    expect(text(html)).toContain("No articles have been published yet");
+    expect(text(html)).not.toContain("Nothing matches");
+    expect(html).not.toContain("article-search");
     expect(html).not.toContain("<ul");
+  });
+});
+
+describe("fetchArticles", () => {
+  it("returns the parsed body when the refresh succeeds", async () => {
+    const posts = [aPost()];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => posts }),
+    );
+
+    await expect(fetchArticles("/api/posts")).resolves.toEqual(posts);
+
+    vi.unstubAllGlobals();
+  });
+
+  it("throws on a non-OK response rather than returning its body", async () => {
+    // The endpoint answers a CMS outage with 503 and a JSON error envelope.
+    // Parsing without checking the status would resolve, and SWR would take
+    // the envelope for the article list and wipe what the reader is reading.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 503,
+        json: async () => ({ error: "Could not reach the article list." }),
+      }),
+    );
+
+    await expect(fetchArticles("/api/posts")).rejects.toThrow("503");
+
+    vi.unstubAllGlobals();
   });
 });

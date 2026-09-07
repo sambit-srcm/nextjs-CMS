@@ -21,15 +21,11 @@ export default async function Blog() {
       <PageMasthead copy={copy} />
 
       <section className="mx-auto w-full max-w-4xl px-6 pb-8">
-        {posts.length === 0 ? (
-          <p className="text-sm text-ink-muted">
-            No articles have been published yet. Please check back shortly.
-          </p>
-        ) : (
-          /* The list is fetched on the server and filtered on the client, so
-             the page still prerenders with every article in the markup. */
-          <ArticleList posts={posts} />
-        )}
+        {/* The list is fetched on the server and filtered on the client, so
+            the page still prerenders with every article in the markup. The
+            empty state lives in ArticleList, which also has to render it when
+            a background refresh comes back with nothing. */}
+        <ArticleList posts={posts} />
       </section>
     </div>
   );

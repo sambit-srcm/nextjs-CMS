@@ -134,6 +134,13 @@ export default async function Article({ params }: PageProps<"/blog/[slug]">) {
             alt=""
             width={post.coverImage.width ?? 1200}
             height={post.coverImage.height ?? 630}
+            // The width above is the asset's own, which Contentful serves at
+            // whatever it was uploaded as — often several thousand pixels. It
+            // sets the aspect ratio; without `sizes` it would also set the
+            // srcset, so the browser would fetch an image many times wider
+            // than the 624px column it is painted into. This is the LCP image
+            // on the page, so that download is the one worth getting right.
+            sizes="(min-width: 672px) 624px, 100vw"
             className="mt-10 w-full rounded-xl object-cover"
             priority
           />

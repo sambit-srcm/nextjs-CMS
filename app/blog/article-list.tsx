@@ -14,7 +14,25 @@ import { filterPosts } from "@/lib/filter-posts";
  * keystroke would add latency for a result the browser already holds.
  */
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+/**
+ * Reads the refresh endpoint, treating a non-OK response as a failure.
+ *
+ * Exported so the status handling can be pinned without a DOM: it is the
+ * whole reason a CMS outage leaves the list alone, and a `res.json()`
+ * one-liner would silently undo it.
+ */
+export const fetchArticles = async (url: string) => {
+  const response = await fetch(url);
+
+  // A failed refresh carries a JSON error envelope, so parsing alone would
+  // resolve and SWR would take the envelope for the article list. Throwing is
+  // what makes it an error, which is what keeps the last good list on screen.
+  if (!response.ok) {
+    throw new Error(`Article refresh failed with ${response.status}`);
+  }
+
+  return response.json();
+};
 
 export function ArticleList({ posts }: { posts: BlogPostListing[] }) {
   const [query, setQuery] = useState("");
@@ -31,17 +49,31 @@ export function ArticleList({ posts }: { posts: BlogPostListing[] }) {
    * what keeps that free: SWR revalidates on mount even when fallbackData is
    * supplied, which would refetch data the page has just embedded in its HTML.
    */
-  const { data } = useSWR<BlogPostListing[]>("/api/posts", fetcher, {
+  const { data } = useSWR<BlogPostListing[]>("/api/posts", fetchArticles, {
     fallbackData: posts,
     revalidateOnMount: false,
     refreshInterval: 60_000,
   });
 
-  // A failed background refresh is not worth surfacing: the reader still has a
-  // valid list on screen, so the last good data keeps rendering.
+  // A failed background refresh is not worth surfacing: SWR leaves `data` on
+  // the last successful response, so the reader keeps the list already on
+  // screen rather than watching it empty out. The `?? posts` is for the type
+  // rather than the runtime — `fallbackData` means data is always set, but
+  // SWR's signature does not narrow on it.
   const current = data ?? posts;
 
   const visible = useMemo(() => filterPosts(current, query), [current, query]);
+
+  // The CMS can legitimately come back with nothing — every article
+  // unpublished, or a refresh landing on an empty space. There is nothing to
+  // search, so the box is left out rather than offered over an empty list.
+  if (current.length === 0) {
+    return (
+      <p className="text-sm text-ink-muted">
+        No articles have been published yet. Please check back shortly.
+      </p>
+    );
+  }
 
   return (
     <>

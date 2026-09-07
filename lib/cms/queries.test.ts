@@ -5,6 +5,7 @@ import {
   getPageContent,
   getPostBySlug,
   getPosts,
+  getPostsOrThrow,
   getServices,
   getSiteSettings,
   getTeam,
@@ -375,6 +376,34 @@ describe("getPosts", () => {
   it("degrades to an empty list on failure", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
     await expect(getPosts()).resolves.toEqual([]);
+  });
+});
+
+describe("getPostsOrThrow", () => {
+  it("maps entries the same way getPosts does", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue(
+          respond(
+            collection([
+              service({ title: "Pixel 10 Pro review", slug: "pixel" }, "p1"),
+            ]),
+          ),
+        ),
+    );
+
+    await expect(getPostsOrThrow()).resolves.toMatchObject([
+      { title: "Pixel 10 Pro review", slug: "pixel" },
+    ]);
+  });
+
+  it("propagates a failure instead of degrading to an empty list", async () => {
+    // The distinction the refresh endpoint depends on: an outage has to be
+    // separable from a CMS that genuinely holds no articles.
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
+    await expect(getPostsOrThrow()).rejects.toThrow("down");
   });
 });
 

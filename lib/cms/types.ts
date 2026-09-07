@@ -109,8 +109,14 @@ export type BlogPost = {
   body: Document | null;
 };
 
-/** A post as the listing renders it: everything but the article body. */
-export type BlogPostListing = Omit<BlogPost, "body">;
+/**
+ * A post as the listing renders it.
+ *
+ * The body is a whole rich-text document and the cover image appears only on
+ * the article page, so neither belongs in a payload the blog page polls every
+ * minute. Widening this is a deliberate decision rather than a default.
+ */
+export type BlogPostListing = Omit<BlogPost, "body" | "coverImage">;
 
 export type Service = {
   title: string;
