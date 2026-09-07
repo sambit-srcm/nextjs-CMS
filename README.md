@@ -199,7 +199,6 @@ Under **Settings → Branches → Add rule** for `main` and `development`:
 - Require review from Code Owners
 - Require status checks to pass, selecting the CI jobs above
 
-
 ## Deployment
 
 Vercel auto-detects Next.js and needs no build configuration from us. The
