@@ -34,13 +34,8 @@ export default async function About() {
         <section className="mx-auto w-full max-w-4xl px-6 py-8">
           <div className="grid gap-4 sm:grid-cols-2">
             {statements.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-xl border border-line bg-surface p-7"
-              >
-                <h2 className="text-base font-medium text-accent-strong">
-                  {item.title}
-                </h2>
+              <div key={item.title} className="box">
+                <h2 className="font-medium">{item.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-ink-muted">
                   {item.body}
                 </p>
@@ -51,9 +46,7 @@ export default async function About() {
       )}
 
       <section className="mx-auto w-full max-w-4xl px-6 py-10">
-        <h2 className="text-xl font-semibold tracking-tight text-ink">
-          {copy?.sectionOneHeading}
-        </h2>
+        <h2 className="text-xl font-semibold">{copy?.sectionOneHeading}</h2>
         {team.length === 0 ? (
           <p className="mt-8 text-sm text-ink-muted">
             Writer details are being updated. Please check back shortly.
@@ -61,13 +54,11 @@ export default async function About() {
         ) : (
           <ul className="mt-9 grid gap-8 sm:grid-cols-3">
             {team.map((member) => (
-              <li key={member.id} className="group relative">
+              <li key={member.id}>
                 {member.photo ? (
                   <Image
                     src={member.photo.url}
-                    // Decorative: the writer's name is the heading directly
-                    // below, so alt text here would either repeat it or, as
-                    // happened with stale CMS descriptions, contradict it.
+                    // Decorative: the name is the heading below.
                     alt=""
                     width={56}
                     height={56}
@@ -78,11 +69,8 @@ export default async function About() {
                     {initials(member.name)}
                   </div>
                 )}
-                <h3 className="mt-4 text-base font-medium text-ink transition-colors group-hover:text-accent-strong">
-                  <Link
-                    href={`/team/${member.id}`}
-                    className="after:absolute after:inset-0"
-                  >
+                <h3 className="mt-4 font-medium">
+                  <Link href={`/team/${member.id}`} className="underline">
                     {member.name}
                   </Link>
                 </h3>

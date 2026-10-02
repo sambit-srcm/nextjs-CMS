@@ -10,12 +10,7 @@ import type { CmsImage } from "@/lib/cms/types";
 import { isActive, NAV_LINKS } from "./site-nav";
 import { ThemeToggle } from "./theme-toggle";
 
-/**
- * Primary navigation.
- *
- * A Client Component because the active link is derived from the current
- * pathname and the mobile menu holds open/closed state.
- */
+/** Site navigation. A client component because it tracks the open menu. */
 export function SiteHeader({
   siteName,
   siteTagline,
@@ -30,7 +25,7 @@ export function SiteHeader({
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-canvas/80 backdrop-blur-md">
+    <header className="border-b border-line bg-canvas">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
         <Link
           href="/"
@@ -43,23 +38,16 @@ export function SiteHeader({
               alt=""
               width={28}
               height={28}
-              // Rounded because the mark ships with its own solid background;
-              // a bare square would sit awkwardly against the header surface.
+              // Rounded to match the logo's own background.
               className="rounded-md"
-              priority
+              // Load immediately. This logo is on every page.
+              loading="eager"
             />
           )}
-          {/*
-            The wordmark and tagline share a baseline with each other; the logo
-            is centred against the pair. Baseline alignment cannot include the
-            image: a replaced element's baseline is its bottom edge, so the
-            mark hung off the text baseline instead of sitting level with it.
-          */}
+          {/* Logo is centred against the name and tagline, not aligned to their baseline. */}
           <span className="flex items-baseline gap-2.5">
-            <span className="text-lg font-semibold tracking-tight text-ink">
-              {siteName}
-            </span>
-            <span className="hidden text-[0.65rem] font-medium tracking-[0.2em] text-accent uppercase sm:inline">
+            <span className="text-lg font-semibold">{siteName}</span>
+            <span className="hidden text-sm text-ink-muted sm:inline">
               {siteTagline}
             </span>
           </span>
@@ -75,10 +63,8 @@ export function SiteHeader({
                     <Link
                       href={link.href}
                       aria-current={active ? "page" : undefined}
-                      className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                        active
-                          ? "bg-accent-soft font-medium text-accent-strong"
-                          : "text-ink-muted hover:text-ink"
+                      className={`px-3 py-2 text-sm ${
+                        active ? "font-medium underline" : "text-ink-muted"
                       }`}
                     >
                       {link.label}
@@ -97,7 +83,7 @@ export function SiteHeader({
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="rounded-full p-2 text-ink-muted transition-colors hover:text-ink sm:hidden"
+            className="p-2 sm:hidden"
           >
             <svg
               aria-hidden="true"

@@ -44,23 +44,15 @@ export default async function Writer({ params }: PageProps<"/team/[id]">) {
   // Both are needed regardless, and neither depends on the other.
   const [member, posts] = await Promise.all([getTeamMember(id), getPosts()]);
 
-  // An unknown id is a genuine 404, not an empty profile.
-  //
-  // As on the article route, this renders the not-found UI with a 200 rather
-  // than a 404 status: app/loading.tsx opens a Suspense boundary, so the
-  // response has begun streaming before the lookup resolves. Next injects
-  // `robots: noindex`, which is what keeps it out of search results.
+  // Unknown id. Shows the not-found page.
   if (!member) notFound();
 
   const written = posts.filter((post) => post.author === member.name);
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="mx-auto w-full max-w-3xl px-6 pt-20 pb-8 sm:pt-28">
-        <Link
-          href="/about"
-          className="text-sm text-accent transition-colors hover:text-accent-strong"
-        >
+      <section className="mx-auto w-full max-w-3xl px-6 py-10">
+        <Link href="/about" className="text-sm underline">
           &larr; All writers
         </Link>
 
@@ -73,7 +65,9 @@ export default async function Writer({ params }: PageProps<"/team/[id]">) {
               width={96}
               height={96}
               className="h-24 w-24 rounded-full object-cover"
-              priority
+              // Load this image first. It is the largest thing on the page.
+              loading="eager"
+              fetchPriority="high"
             />
           ) : (
             <div className="flex h-24 w-24 items-center justify-center rounded-full bg-accent-soft text-xl font-medium text-accent-strong">
@@ -82,9 +76,7 @@ export default async function Writer({ params }: PageProps<"/team/[id]">) {
           )}
 
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-              {member.name}
-            </h1>
+            <h1 className="text-3xl font-semibold">{member.name}</h1>
             <p className="mt-1.5 text-sm font-medium text-accent">
               {member.designation}
             </p>
@@ -99,7 +91,7 @@ export default async function Writer({ params }: PageProps<"/team/[id]">) {
       </section>
 
       <section className="mx-auto w-full max-w-3xl px-6 pb-8">
-        <h2 className="text-xl font-semibold tracking-tight text-ink">
+        <h2 className="text-xl font-semibold">
           {written.length > 0
             ? `Articles by ${member.name.split(" ")[0]}`
             : "Articles"}
@@ -113,15 +105,12 @@ export default async function Writer({ params }: PageProps<"/team/[id]">) {
           <ul className="mt-6 divide-y divide-line border-t border-line">
             {written.map((post) => (
               <li key={post.slug}>
-                <article className="group relative py-7">
-                  <p className="text-xs text-ink-muted">
+                <article className="py-6">
+                  <p className="text-sm text-ink-muted">
                     {formatDate(post.date)}
                   </p>
-                  <h3 className="mt-2 text-lg leading-snug font-medium text-ink transition-colors group-hover:text-accent-strong">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="after:absolute after:inset-0"
-                    >
+                  <h3 className="mt-2 text-lg font-medium">
+                    <Link href={`/blog/${post.slug}`} className="underline">
                       {post.title}
                     </Link>
                   </h3>
