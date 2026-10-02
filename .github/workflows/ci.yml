@@ -26,11 +26,12 @@ jobs:
           node-version: 22
           cache: npm
 
-      # Plain `npm ci` rather than skipping lifecycle scripts: several
-      # dependencies fetch native binaries in one, and skipping those breaks
-      # the build. The husky install it triggers is harmless on a runner.
+      # Full `npm ci`: some packages download native binaries in install scripts.
       - name: Install dependencies
         run: npm ci
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Lint
         run: npm run lint
@@ -41,10 +42,7 @@ jobs:
       - name: Test with coverage thresholds
         run: npm run test:coverage
 
-      # The CMS credentials are not secrets the build needs: every query
-      # degrades to an empty result when Contentful is unreachable, so the
-      # build exercises the real code path with placeholders and still fails
-      # on a genuine compile or prerender error.
+      # Placeholder CMS values are enough: queries fall back to empty results.
       - name: Build
         run: npm run build
         env:
@@ -55,14 +53,12 @@ jobs:
   commits:
     name: Commit messages
     runs-on: ubuntu-latest
-    # Nothing to validate on a push to a protected branch — those commits
-    # were already checked on the pull request that introduced them.
+    # Commits pushed to main/development were already checked on their PR.
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
         with:
-          # commitlint needs both ends of the range, which a shallow clone
-          # does not have.
+          # commitlint needs the full history to compare base and head.
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -86,8 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Gitleaks scans history, not just the tip, so a secret committed
-          # earlier in the branch is still caught.
+          # Scan the whole history, not just the latest commit.
           fetch-depth: 0
 
       - name: Scan for committed secrets
