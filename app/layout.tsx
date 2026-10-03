@@ -17,11 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/**
- * Brand strings used when the CMS is unreachable. The document must still have
- * a title and the chrome must still render; falling back to empty strings
- * would ship a nameless page.
- */
+/** Used when Contentful does not return a site name or description. */
 const FALLBACK = {
   siteName: "Circuit",
   siteTagline: "Phones & Tech",
@@ -33,8 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
   return {
-    // Resolves every relative `alternates.canonical` below it, and the
-    // relative image URLs in each route's Open Graph card.
+    // Base for relative canonical and Open Graph URLs.
     metadataBase: new URL(siteUrl),
     title: settings?.siteName || FALLBACK.siteName,
     description: settings?.metaDescription || FALLBACK.metaDescription,
@@ -47,17 +42,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      data-theme="dark"
+      data-theme="light"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/*
-          Applies a stored theme before the browser paints. Deferring this to
-          an effect would render the default palette first and then flip,
-          which is visible. Kept to one statement and wrapped in try/catch
-          because localStorage throws when site data is blocked.
-        */}
+        {/* Apply a saved theme before the page paints, so it does not flash. */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`,
@@ -65,12 +55,22 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col">
+        {/* Hidden until focused. Lets keyboard users skip the navigation. */}
+        <a
+          href="#main"
+          className="sr-only bg-accent px-4 py-2 text-sm text-accent-ink focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+        >
+          Skip to content
+        </a>
         <SiteHeader
           siteName={settings?.siteName || FALLBACK.siteName}
           siteTagline={settings?.siteTagline || FALLBACK.siteTagline}
           logo={settings?.logo}
         />
-        {children}
+        {/* Page content. The header and footer stay outside this landmark. */}
+        <main id="main" className="flex flex-1 flex-col">
+          {children}
+        </main>
         <SiteFooter
           siteName={settings?.siteName || FALLBACK.siteName}
           footerTagline={settings?.footerTagline || FALLBACK.footerTagline}
