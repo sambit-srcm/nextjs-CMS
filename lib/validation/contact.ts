@@ -1,34 +1,38 @@
 import { z } from "zod";
 
-/**
- * Shape of a contact form submission.
- *
- * Deliberately free of `server-only` so the same schema can validate on the
- * client before a request is made, keeping one definition rather than two that
- * can drift apart.
- *
- * Limits mirror the Contentful content model, so an oversized field is rejected
- * here rather than by the CMS after a round trip.
- */
+/** Field limits, shared with the form's `maxLength` attributes. */
+export const CONTACT_LIMITS = { name: 100, email: 254, message: 5000 } as const;
+
+/** Hidden form field. If it is filled in, the message is treated as spam. */
+export const HONEYPOT_FIELD = "website";
+
+/** Rules for a contact message. Shared by the form and the API. */
 export const contactSubmissionSchema = z.object({
   name: z
     .string()
     .trim()
     .min(1, "Name is required.")
-    .max(100, "Name must be 100 characters or fewer."),
+    .max(
+      CONTACT_LIMITS.name,
+      `Name must be ${CONTACT_LIMITS.name} characters or fewer.`,
+    ),
 
-  // Permissive by design: the goal is catching typos, not policing valid
-  // addresses. Strict patterns reject deliverable addresses more often than
-  // they catch bad ones.
+  // Catches obvious typos. A stricter pattern rejects real addresses.
   email: z
     .email("Please provide a valid email address.")
-    .max(254, "Email must be 254 characters or fewer."),
+    .max(
+      CONTACT_LIMITS.email,
+      `Email must be ${CONTACT_LIMITS.email} characters or fewer.`,
+    ),
 
   message: z
     .string()
     .trim()
     .min(1, "Message is required.")
-    .max(5000, "Message must be 5000 characters or fewer."),
+    .max(
+      CONTACT_LIMITS.message,
+      `Message must be ${CONTACT_LIMITS.message} characters or fewer.`,
+    ),
 });
 
 export type ContactSubmissionInput = z.infer<typeof contactSubmissionSchema>;
@@ -42,10 +46,10 @@ export function toFieldErrors(
   const { fieldErrors } = z.flattenError(error);
   const errors: FieldErrors = {};
 
-  for (const field of ["name", "email", "message"] as const) {
-    const [first] = fieldErrors[field] ?? [];
-    if (first) errors[field] = first;
-  }
+  // Keep only the first message for each field.
+  if (fieldErrors.name) errors.name = fieldErrors.name[0];
+  if (fieldErrors.email) errors.email = fieldErrors.email[0];
+  if (fieldErrors.message) errors.message = fieldErrors.message[0];
 
   return errors;
 }
