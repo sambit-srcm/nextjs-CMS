@@ -9,10 +9,7 @@ import type {
   TeamMember,
 } from "@/lib/cms/types";
 
-/*
- * Fully-populated CMS shapes. Tests override only the field under test, so a
- * new required field is added in one place rather than in every page test.
- */
+/* Complete CMS objects; tests override only what they check. */
 
 export const aPageContent = (over: Partial<PageContent> = {}): PageContent => ({
   eyebrow: "Eyebrow copy",
