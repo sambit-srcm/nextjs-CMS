@@ -1,7 +1,4 @@
-# Gitleaks configuration.
-#
-# Extends the bundled ruleset rather than replacing it, so new detectors ship
-# with the tool instead of needing to be added here.
+# Gitleaks config: extends the default rules instead of replacing them.
 
 [extend]
 useDefault = true
