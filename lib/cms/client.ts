@@ -7,13 +7,7 @@ const BASE = "https://cdn.contentful.com";
 /** Options accepted by `fetchEntries`, mirroring the CDA query parameters. */
 export type EntryQuery = Record<string, string | number | undefined>;
 
-/**
- * The subset of a Content Delivery API collection response the queries use.
- *
- * Linked assets are not inlined by the REST API; they arrive alongside the
- * entries in `includes.Asset` and are matched back by ID at the mapping
- * boundary.
- */
+/** The part of a Contentful response the queries read. */
 export type EntryCollection<Fields> = {
   total: number;
   items: { sys: { id: string }; fields: Partial<Fields> }[];
@@ -35,13 +29,7 @@ export type RawAsset = {
 /** A link to an asset, as it appears on an entry field before resolution. */
 export type AssetLink = { sys: { id: string; linkType?: string } };
 
-/**
- * Reads a collection from the Content Delivery API.
- *
- * Uses `fetch` directly rather than an SDK so that Next's cache sees the
- * request: `revalidate` and `tags` below are what make on-demand revalidation
- * possible, which an axios-based client cannot offer.
- */
+/** Loads entries from Contentful. `tags` let the webhook clear this cache. */
 export async function fetchEntries<Fields>(
   contentType: string,
   query: EntryQuery = {},
@@ -64,8 +52,7 @@ export async function fetchEntries<Fields>(
   });
 
   if (!response.ok) {
-    // Read the body for the reason — Contentful returns a JSON error envelope
-    // that is far more useful than the status code alone.
+    // Contentful's error body explains more than the status code.
     const detail = await response.text();
     throw new Error(
       `Contentful responded ${response.status} for ${contentType}: ${detail}`,

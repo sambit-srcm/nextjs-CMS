@@ -9,12 +9,7 @@ export function formatDate(value: string): string | null {
   });
 }
 
-/**
- * Initials for an avatar placeholder, e.g. "Marcus Feld" becomes "MF".
- *
- * Shared by the writer list and the writer detail page, which previously
- * carried a copy each and could drift apart.
- */
+/** "Marcus Feld" becomes "MF". */
 export function initials(name: string): string {
   return name
     .split(" ")

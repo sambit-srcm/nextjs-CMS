@@ -1,18 +1,7 @@
 /** The fields the search reads. Anything carrying these can be filtered. */
 type Searchable = { title: string; excerpt: string; author: string };
 
-/**
- * Narrows a list of articles by a free-text query.
- *
- * Every whitespace-separated term must appear somewhere in the title, excerpt
- * or author, so a second word narrows the result rather than widening it the
- * way a single-substring test would. Matching is case-insensitive.
- *
- * An empty or whitespace-only query returns the list untouched.
- *
- * Generic over the item so it serves both the full post and the trimmed
- * listing shape the blog page polls, without either needing a second copy.
- */
+/** Keeps posts whose title, excerpt, or author contain every search word. */
 export function filterPosts<T extends Searchable>(
   posts: T[],
   query: string,

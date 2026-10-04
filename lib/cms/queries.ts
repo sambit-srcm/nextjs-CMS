@@ -20,14 +20,7 @@ import type {
 } from "./types";
 import { optionalString, requiredString } from "./validate";
 
-/**
- * Resolves an asset link against the `includes.Asset` block.
- *
- * Unlike the SDK, the REST API does not inline linked assets — it returns the
- * link on the field and the asset itself alongside the entries. An asset that
- * is unpublished or otherwise unresolvable is simply absent, which is why a
- * miss yields null rather than throwing.
- */
+/** Finds the image for an asset link. Returns null when the asset is missing. */
 function resolveImage(
   link: AssetLink | undefined,
   assets: RawAsset[] | undefined,
@@ -43,10 +36,7 @@ function resolveImage(
   return {
     // Asset URLs come back protocol-relative (`//images.ctfassets.net/…`).
     url: file.url.startsWith("//") ? `https:${file.url}` : file.url,
-    // Only the editor-written description. Contentful's asset title is a
-    // filename more often than a sentence, and falling back to the entry's
-    // own name guarantees alt text that repeats the heading beside it —
-    // both are worse for a screen reader than no alt text at all.
+    // Use the editor's description. The asset title is often just a filename.
     alt: asset?.fields?.description || "",
     width: dimensions?.width,
     height: dimensions?.height,
@@ -60,13 +50,7 @@ function assets<T>(collection: EntryCollection<T>): RawAsset[] | undefined {
 /** One Contentful entry as it arrives from the REST API. */
 type Entry<Fields> = { sys: { id: string }; fields: Partial<Fields> };
 
-/**
- * Maps a blogPost entry to the flat shape the UI consumes, or null when a
- * field the UI cannot render without is missing.
- *
- * Shared by getPosts and getPostBySlug so the two cannot drift; a field added
- * here reaches the listing and the article page together.
- */
+/** Turns a Contentful blog entry into the shape the pages use. */
 function toBlogPost(
   entry: Entry<BlogPostFields>,
   assets: RawAsset[] | undefined,
@@ -107,6 +91,28 @@ function toTeamMember(
     designation,
     bio: optionalString(f.bio),
     photo: resolveImage(f.photo, assets),
+  };
+}
+
+/** As `toBlogPost`, for service entries. */
+function toService(
+  entry: Entry<ServiceFields>,
+  assets: RawAsset[] | undefined,
+): Service | null {
+  const f = entry.fields;
+  const title = requiredString(f.title, "title", entry.sys.id);
+  const description = requiredString(
+    f.description,
+    "description",
+    entry.sys.id,
+  );
+  if (!title || !description) return null;
+
+  return {
+    title,
+    description,
+    price: optionalString(f.price),
+    image: resolveImage(f.image, assets),
   };
 }
 
@@ -159,10 +165,13 @@ export async function getPosts(limit?: number): Promise<BlogPost[]> {
         limit,
       });
 
-      return data.items.flatMap((entry) => {
+      // Skip entries missing a required field.
+      const posts: BlogPost[] = [];
+      for (const entry of data.items) {
         const post = toBlogPost(entry, assets(data));
-        return post ? [post] : [];
-      });
+        if (post) posts.push(post);
+      }
+      return posts;
     },
     [],
   );
@@ -174,28 +183,16 @@ export async function getServices(limit?: number): Promise<Service[]> {
     async () => {
       const data = await fetchEntries<ServiceFields>("service", {
         order: "fields.order",
-        ...(limit ? { limit } : {}),
+        limit,
       });
 
-      return data.items.flatMap((entry) => {
-        const f = entry.fields;
-        const title = requiredString(f.title, "title", entry.sys.id);
-        const description = requiredString(
-          f.description,
-          "description",
-          entry.sys.id,
-        );
-        if (!title || !description) return [];
-
-        return [
-          {
-            title,
-            description,
-            price: optionalString(f.price),
-            image: resolveImage(f.image, assets(data)),
-          },
-        ];
-      });
+      // Skip entries missing a required field.
+      const services: Service[] = [];
+      for (const entry of data.items) {
+        const service = toService(entry, assets(data));
+        if (service) services.push(service);
+      }
+      return services;
     },
     [],
   );
@@ -209,10 +206,13 @@ export async function getTeam(): Promise<TeamMember[]> {
         order: "fields.order",
       });
 
-      return data.items.flatMap((entry) => {
+      // Skip entries missing a required field.
+      const team: TeamMember[] = [];
+      for (const entry of data.items) {
         const member = toTeamMember(entry, assets(data));
-        return member ? [member] : [];
-      });
+        if (member) team.push(member);
+      }
+      return team;
     },
     [],
   );
@@ -232,9 +232,7 @@ export async function getContactPage(): Promise<ContactPageCopy | null> {
         return null;
       }
 
-      // Every field except `intro` is required in the content model, so an entry
-      // missing any of them cannot render a usable form. Treat that as no copy at
-      // all rather than emitting blank labels.
+      // All fields but `intro` are required; skip an incomplete entry.
       const f = entry.fields;
       const heading = requiredString(f.heading, "heading", entry.sys.id);
       const submitLabel = requiredString(
@@ -285,8 +283,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   return withFallback(
     `getPostBySlug(${slug})`,
     async () => {
-      // Filtering server-side rather than fetching every post and finding one
-      // keeps the request proportional to what is rendered.
+      // Ask Contentful for just this post.
       const data = await fetchEntries<BlogPostFields>("blogPost", {
         "fields.slug": slug,
         limit: 1,
@@ -305,8 +302,7 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
   return withFallback(
     `getTeamMember(${id})`,
     async () => {
-      // Filtered server-side by entry id rather than fetching the whole team and
-      // finding one, so the request stays proportional to what is rendered.
+      // Ask Contentful for just this team member.
       const data = await fetchEntries<TeamMemberFields>("teamMember", {
         "sys.id": id,
         limit: 1,
@@ -321,11 +317,7 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
   );
 }
 
-/**
- * Masthead copy for a single route, keyed by a readable entry id such as
- * `page-blog`. Returns null when the entry is absent so the caller can fall
- * back rather than render empty headings.
- */
+/** Masthead copy for one page, e.g. `page-blog`; null if missing. */
 export async function getPageContent(id: string): Promise<PageContent | null> {
   return withFallback(
     `getPageContent(${id})`,
