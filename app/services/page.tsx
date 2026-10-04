@@ -27,11 +27,8 @@ export default async function Topics() {
           </p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-3">
-            {topics.map((topic) => (
-              <article
-                key={topic.title}
-                className="overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-accent"
-              >
+            {topics.map((topic, index) => (
+              <article key={topic.title} className="box overflow-hidden p-0">
                 {topic.image ? (
                   <div className="relative h-36 w-full">
                     <Image
@@ -41,10 +38,13 @@ export default async function Topics() {
                       fill
                       sizes="(min-width: 640px) 33vw, 100vw"
                       className="object-cover"
+                      // The first row is visible immediately, so load those images now.
+                      loading={index < 3 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "auto"}
                     />
                   </div>
                 ) : (
-                  <div className="h-36 w-full bg-gradient-to-br from-accent-soft to-surface-raised" />
+                  <div className="h-36 w-full bg-surface-raised" />
                 )}
                 <div className="p-6">
                   <h2 className="text-base font-medium text-ink">

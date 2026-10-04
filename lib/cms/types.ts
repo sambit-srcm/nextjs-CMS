@@ -72,8 +72,7 @@ export type CmsImage = {
   height?: number;
 };
 
-/** Masthead copy for one route. Every field is optional so a page still
- *  renders if an editor has not filled it in. */
+/** Masthead copy for one page. All optional, so missing fields don't break it. */
 export type PageContent = {
   eyebrow: string;
   heading: string;

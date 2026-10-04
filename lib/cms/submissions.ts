@@ -12,13 +12,7 @@ export type ContactSubmission = {
   message: string;
 };
 
-/**
- * Read lazily rather than through `env.ts`.
- *
- * `env.ts` validates at module load, which would make the whole site fail to
- * build without a management token. Writing is only needed by the contact
- * endpoint, so the absence should fail that one request rather than every page.
- */
+/** Read only when saving a message, so a missing token does not break every page. */
 function managementToken(): string {
   const token = process.env.CONTENTFUL_MANAGEMENT_TOKEN;
 
@@ -31,13 +25,7 @@ function managementToken(): string {
   return token;
 }
 
-/**
- * Records a contact form submission as an unpublished Contentful entry.
- *
- * Deliberately not published: these are enquiries, not site content. Leaving
- * them as drafts keeps them out of the Delivery API entirely, so a submission
- * can never surface on the public site through a stray query.
- */
+/** Saves a contact message as an unpublished Contentful entry. */
 export async function createContactSubmission(
   submission: ContactSubmission,
 ): Promise<{ id: string }> {

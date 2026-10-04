@@ -1,15 +1,7 @@
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-/**
- * Renders a component tree to HTML.
- *
- * Server Components are async functions returning an element tree, so they can
- * be awaited and rendered in plain Node — no DOM needed. Client Components
- * render their first frame the same way, which is what the browser receives
- * before hydration. Event handlers and effects do not run under this renderer;
- * anything that depends on them is left uncovered rather than faked.
- */
+/** Renders a component to an HTML string. Click handlers do not run. */
 export function render(element: ReactElement): string {
   return renderToStaticMarkup(element);
 }
@@ -23,10 +15,7 @@ const ENTITIES: Record<string, string> = {
   "&#39;": "'",
 };
 
-/**
- * Strips tags and unescapes entities, so assertions match the copy an editor
- * typed into the CMS rather than its HTML-escaped form.
- */
+/** Strips tags and decodes entities, to compare against plain CMS text. */
 export function text(html: string): string {
   return html
     .replace(/<[^>]*>/g, " ")
