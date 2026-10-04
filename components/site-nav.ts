@@ -7,10 +7,8 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-/**
- * The home link would match every path under a prefix test, so it is compared
- * exactly while the rest match their section and any future child routes.
- */
+/** Home matches exactly; other links also match their child routes. */
 export function isActive(pathname: string, href: string): boolean {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
 }

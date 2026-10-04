@@ -4,14 +4,7 @@ type Theme = "dark" | "light";
 
 const STORAGE_KEY = "theme";
 
-/**
- * Switches between the two palettes and remembers the choice.
- *
- * Holds no React state. Which icon and which accessible label apply is decided
- * in CSS from the `data-theme` attribute, so the correct pair is painted in the
- * first frame. Deriving them from state would mean either a hydration mismatch
- * or a visible flip once hydration completes.
- */
+/** Switches between light and dark and saves the choice in localStorage. */
 export function ThemeToggle() {
   function toggle() {
     const root = document.documentElement;
@@ -23,19 +16,13 @@ export function ThemeToggle() {
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
-      // Private browsing or blocked site data. The theme still applies to this
-      // page view; it just will not be remembered.
+      // Storage can be blocked. The theme still changes for this page view.
     }
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      className="rounded-full p-2 text-ink-muted transition-colors hover:text-ink"
-    >
-      {/* Only the one matching the active theme is rendered, so exactly one
-          label reaches assistive technology. */}
+    <button type="button" onClick={toggle} className="p-2 text-ink-muted">
+      {/* CSS hides the label that does not match the current theme. */}
       <span className="theme-icon-dark sr-only">Switch to light theme</span>
       <span className="theme-icon-light sr-only">Switch to dark theme</span>
 

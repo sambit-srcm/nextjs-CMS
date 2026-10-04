@@ -1,9 +1,4 @@
-/**
- * Suspense fallback shown while a route's content is being fetched.
- *
- * Mirrors the shared page skeleton — masthead, then a stack of entries — so the
- * layout does not shift when the real content arrives.
- */
+/** Placeholder shown while a page is loading. */
 export default function Loading() {
   return (
     <div

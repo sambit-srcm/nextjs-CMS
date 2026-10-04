@@ -3,6 +3,18 @@
 import { useState } from "react";
 
 import type { ContactPageCopy } from "@/lib/cms/types";
+import {
+  CONTACT_LIMITS,
+  type FieldErrors,
+  HONEYPOT_FIELD,
+} from "@/lib/validation/contact";
+
+import {
+  failureNotice,
+  messageDescribedBy,
+  OFFLINE_NOTICE,
+  submitContact,
+} from "./submit-contact";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -11,6 +23,19 @@ type ContactFormProps = Pick<
   "submitLabel" | "submittingLabel" | "successMessage" | "errorMessage"
 >;
 
+const FIELD_CLASS =
+  "w-full rounded border border-line px-3 py-2 text-sm aria-[invalid=true]:border-danger";
+
+/** Error text under a field; its id is what the input's aria-describedby points at. */
+function FieldError({ field, message }: { field: string; message?: string }) {
+  if (!message) return null;
+  return (
+    <p id={`${field}-error`} role="alert" className="text-sm text-danger">
+      {message}
+    </p>
+  );
+}
+
 export function ContactForm({
   submitLabel,
   submittingLabel,
@@ -18,40 +43,54 @@ export function ContactForm({
   errorMessage,
 }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [notice, setNotice] = useState<string | null>(null);
+  const [messageLength, setMessageLength] = useState(0);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("submitting");
+    setFieldErrors({});
+    setNotice(null);
 
     const form = event.currentTarget;
-    const data = new FormData(form);
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.get("name"),
-          email: data.get("email"),
-          message: data.get("message"),
-        }),
-      });
+      const result = await submitContact(new FormData(form));
 
-      if (!res.ok) throw new Error(`Contact request failed: ${res.status}`);
+      if (!result.ok) {
+        setFieldErrors(result.fieldErrors);
+        setNotice(failureNotice(result, errorMessage));
+        setStatus("error");
+        return;
+      }
 
       setStatus("success");
+      setMessageLength(0);
       form.reset();
     } catch (error) {
-      // The visitor sees the CMS-authored error message; the reason goes to
-      // the console so a failure is diagnosable rather than silent. Swallowing
-      // it entirely left a broken form looking identical to a rejected one.
+      // Network failure (offline, DNS); HTTP errors are handled above.
       console.error("Contact form submission failed:", error);
+      setNotice(OFFLINE_NOTICE);
       setStatus("error");
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit}
+      // Typing in a field clears that field's error from the last attempt.
+      onChange={(event) => {
+        // React types this as the form, but it is the field that changed.
+        const target = event.target as unknown as
+          HTMLInputElement | HTMLTextAreaElement;
+        const name = target.name;
+        if (name === "message") setMessageLength(target.value.length);
+        if (name in fieldErrors)
+          setFieldErrors({ ...fieldErrors, [name]: undefined });
+      }}
+      className="flex flex-col gap-4"
+    >
       <div className="flex flex-col gap-1">
         <label htmlFor="name" className="text-sm font-medium text-ink">
           Name
@@ -60,9 +99,14 @@ export function ContactForm({
           id="name"
           name="name"
           type="text"
+          autoComplete="name"
+          maxLength={CONTACT_LIMITS.name}
           required
-          className="rounded-lg border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink transition-colors outline-none placeholder:text-ink-muted focus:border-accent"
+          className={FIELD_CLASS}
+          aria-invalid={fieldErrors.name ? true : undefined}
+          aria-describedby={fieldErrors.name ? "name-error" : undefined}
         />
+        <FieldError field="name" message={fieldErrors.name} />
       </div>
 
       <div className="flex flex-col gap-1">
@@ -73,9 +117,14 @@ export function ContactForm({
           id="email"
           name="email"
           type="email"
+          autoComplete="email"
+          maxLength={CONTACT_LIMITS.email}
           required
-          className="rounded-lg border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink transition-colors outline-none placeholder:text-ink-muted focus:border-accent"
+          className={FIELD_CLASS}
+          aria-invalid={fieldErrors.email ? true : undefined}
+          aria-describedby={fieldErrors.email ? "email-error" : undefined}
         />
+        <FieldError field="email" message={fieldErrors.email} />
       </div>
 
       <div className="flex flex-col gap-1">
@@ -86,24 +135,51 @@ export function ContactForm({
           id="message"
           name="message"
           rows={5}
+          maxLength={CONTACT_LIMITS.message}
           required
-          className="rounded-lg border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink transition-colors outline-none placeholder:text-ink-muted focus:border-accent"
+          className={FIELD_CLASS}
+          aria-invalid={fieldErrors.message ? true : undefined}
+          aria-describedby={messageDescribedBy(fieldErrors.message)}
+        />
+        <FieldError field="message" message={fieldErrors.message} />
+        <p id="message-count" className="text-right text-xs text-ink-muted">
+          {messageLength} / {CONTACT_LIMITS.message}
+        </p>
+      </div>
+
+      {/* Off screen on purpose. A filled-in value means the sender is a bot. */}
+      <div
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-px w-px overflow-hidden"
+      >
+        <label htmlFor={HONEYPOT_FIELD}>Leave this field empty</label>
+        <input
+          id={HONEYPOT_FIELD}
+          name={HONEYPOT_FIELD}
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-3 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong disabled:opacity-50"
+        className="button mt-3 disabled:opacity-50"
       >
         {status === "submitting" ? submittingLabel : submitLabel}
       </button>
 
+      {/* role="status" / role="alert" make screen readers read the result out. */}
       {status === "success" && (
-        <p className="text-sm text-accent-strong">{successMessage}</p>
+        <p role="status" className="text-sm text-accent-strong">
+          {successMessage}
+        </p>
       )}
-      {status === "error" && (
-        <p className="text-sm text-red-400">{errorMessage}</p>
+      {status === "error" && notice && (
+        <p role="alert" className="text-sm text-danger">
+          {notice}
+        </p>
       )}
     </form>
   );

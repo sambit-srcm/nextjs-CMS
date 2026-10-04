@@ -26,8 +26,7 @@ export default async function Blog() {
             No articles have been published yet. Please check back shortly.
           </p>
         ) : (
-          /* The list is fetched on the server and filtered on the client, so
-             the page still prerenders with every article in the markup. */
+          /* Filtered on the client; the server still renders every article. */
           <ArticleList posts={posts} />
         )}
       </section>

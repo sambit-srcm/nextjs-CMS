@@ -8,13 +8,7 @@ export const revalidate = 60;
 /** Routes that exist regardless of what the CMS holds. */
 const STATIC_PATHS = ["/", "/about", "/services", "/blog", "/contact"];
 
-/**
- * Listed in robots.txt, so it has to exist — pointing a crawler at a missing
- * sitemap is worse than not naming one.
- *
- * Queries degrade to empty arrays when the CMS is unreachable, so an outage
- * yields a sitemap of the static routes rather than a failed build.
- */
+/** Pages for search engines. Static routes stay listed even if the CMS is down. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, team] = await Promise.all([getPosts(), getTeam()]);
 

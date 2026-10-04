@@ -1,8 +1,4 @@
-/**
- * Raised when a Contentful request fails outright — network error, bad
- * credentials, unknown content type. Carries the originating error as `cause`
- * so the underlying failure is not lost.
- */
+/** A failed Contentful request; the original error is kept as `cause`. */
 export class CmsError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
@@ -10,13 +6,7 @@ export class CmsError extends Error {
   }
 }
 
-/**
- * Runs a Contentful query and degrades to `fallback` if it fails.
- *
- * A CMS outage should not take the whole site down with it, so failures are
- * logged server-side and the caller receives an empty result instead. The
- * page then renders its empty state rather than a 500.
- */
+/** Runs a Contentful query. On failure, logs it and returns `fallback`. */
 export async function withFallback<T>(
   label: string,
   query: () => Promise<T>,

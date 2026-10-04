@@ -81,12 +81,21 @@ at startup, so a deployment without it still builds and serves every page — on
 the contact form fails, and it fails with a generic message while the reason
 goes to the server log.
 
+The endpoint accepts JSON only, refuses a cross-site or malformed `Origin`,
+and stops reading after 16 KB. Each IP address may send 5 messages per 10
+minutes; the next response is `429` with `Retry-After`, and the form shows
+that sentence instead of the generic failure. A hidden field people never
+see is a spam trap: when it is filled, the API answers as if the message was
+saved and writes nothing. Every response also sends a Content-Security-Policy,
+HSTS, `nosniff`, `X-Frame-Options: DENY`, a referrer policy, and a permissions
+policy (`lib/security-headers.ts`). `X-Powered-By` is off.
+
 **Input validation** lives in `lib/validation/`, defined as Zod schemas. The
 schema is the single source of truth: the request type is inferred from it, and
 it carries no `server-only` import so the same definition can validate on the
 client without a second copy that can drift.
 
-**Tests** run on Vitest (`npm test`; `npm run test:coverage` for the report).
+**Tests** live in `test/`, mirroring the source folders, and run on Vitest (`npm test`; `npm run test:coverage` for the report).
 They cover the validation schema, both route handlers, the CMS query layer, and
 every page and component — including the paths that are awkward to exercise by
 hand, such as a failed CMS write degrading correctly, error responses not
